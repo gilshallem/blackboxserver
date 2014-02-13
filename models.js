@@ -7,9 +7,11 @@ exports.ForexHistory = mongoose.model('ForexHistory',new mongoose.Schema({
 
 },{ autoIndex: false }));
 
-exports.indicators = mongoose.model('indicators',new mongoose.Schema({
-	asset: String,
-	timestamp:  Number,
-	ma10: Number
+
+exports.phoneValidate = mongoose.model('phone_validation',new mongoose.Schema({
+	number: String,
+	code:  String,
+	ip: String,
+	timestamp: Number
 
 },{ autoIndex: false }));

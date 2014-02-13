@@ -20,10 +20,10 @@ exports.start = function() {
 		onTick: function() {
 			fruefx.getCurrencyUpdates(updateData);
 		},
-		start: false
+		start: true
 
 	});
-	fruefx.getCurrencyUpdates(updateData);
+	//fruefx.getCurrencyUpdates(updateData);
 	job.start();
 
 }
@@ -47,16 +47,6 @@ function updateData(trueFxOutput) {
 		assets[assetName]=bid;
 		newValues.push({asset:assetName,bid: bid,timestamp:now});
 	}
-	var before = now - (MAX_HISTORY_MINUTES * 60000);
-	models.ForexHistory.remove({ timestamp:{$lt: before} }, function(err) {
-		if (!err) {
-			console.log("Old data removed");
-			
-		}
-		else {
-			console.log("Error removing data: "+ err.message);
-		}
-	});
 	
 	models.ForexHistory.create(newValues);
 	

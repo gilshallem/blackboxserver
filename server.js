@@ -2,17 +2,22 @@ var express = require("express");
 var logfmt = require("logfmt");
 var app = express();
 var mongoose = require ("mongoose");
-var strategiesEngine = require('./strategies/strategies_engine');
 var fruefx = require('./external_apis/true_fx');
 var models = require ("./models") // TODO: remove
+var phoneValidation = require('./registration/phone_validation');
+var registration = require('./registration/registration');
 
-//update strategies
-var cronRunStrategies =  require('./cron_jobs/run_strategies');
-cronRunStrategies.start(strategiesEngine.getStrategies());
+app.use(express.json());       // to support JSON-encoded bodies
+app.use(express.urlencoded()); // to support URL-encoded bodies
+app.use(logfmt.requestLogger());
+
 //update data
 var cronUpdateData =  require('./cron_jobs/update_data');
 cronUpdateData.start();
 
+//shrink data
+var cronShrinkData =  require('./cron_jobs/shrink_data');
+cronShrinkData.start();
 
 //connect to db
 var uristring =
@@ -27,49 +32,44 @@ var uristring =
 			console.log ('Succeeded connected to: ' + uristring);
 		}
 	});
+var getClientAddress = function (req) {
+    return (req.headers['x-forwarded-for'] || '').split(',')[0] 
+    || req.connection.remoteAddress || 
+    req.socket.remoteAddress ||
+    req.connection.socket.remoteAddress;
+};
 
-app.use(logfmt.requestLogger());
 
-app.get('/', function(req, res) {
-	res.send('Hello Worldsss!');
-});
 
-app.get('/getUpdates', function(req, res) {
-	fruefx.getCurrencyUpdates(function (data) {
-		res.setHeader('Content-Type', 'text/plain');
-		res.send(data);
+app.post('/validateNumber', function(req, res) {
+	phoneValidation.sendSMS(req.body.number,getClientAddress(req),function(status,err) {
+		res.send(""+status);
+		if (!err) console.log("Error validateNumber returned " +status +":" + err);
 	});
 });
 
-app.get('/getHistory', function(req, res) {
-	models.ForexHistory.find({ asset:"EUR/USD" }).select("timestamp bid").exec(function(err, result) { 
-		if (!err) { 
-			res.send(JSON.stringify(result));
+app.post('/register', function(req, res) {
+	registration.register(req.body.fname,req.body.lname,req.body.email,req.body.country,req.body.language,req.body.number,req.body.code,function(status,err) {
+		res.send(""+status);
+		if (!err) console.log("Error validateNumber returned " +status +":" + err);
+	});
+	
+});
 
+app.post('/getHistory', function(req, res) {
+	//TODO: limit
+	models.ForexHistory.find({ asset:req.body.asset }).select("timestamp bid").exec(function(err, result) { 
+		if (!err) {
+			res.send(JSON.stringify(result));
 		} else {
 			console.log(err);
 			res.send(err);
-
 		};
 	}); 
 });
 
-app.get('/indicators', function(req, res) {
-	models.indicators.find({ asset:"EUR/USD" }).exec(function(err, result) { 
-		if (!err) { 
-			res.send(JSON.stringify(result));
 
-		} else {
-			console.log(err);
-			res.send(err);
 
-		};
-	}); 
-});
-
-app.get('/getStrategyData', function(req, res) {
-	res.send("val=" + strategiesEngine.getStrategyData("random","EUR/USD"));
-});
 
 var port = Number(process.env.PORT || 5000);
 
