@@ -57,15 +57,7 @@ function updateData(trueFxOutput) {
 			console.log("Error removing data: "+ err.message);
 		}
 	});
-	models.indicators.remove({ timestamp:{$lt: before} }, function(err) {
-		if (!err) {
-			console.log("Old idicators data removed");
-			
-		}
-		else {
-			console.log("Error removing idicators data: "+ err.message);
-		}
-	});
+	
 	models.ForexHistory.create(newValues);
 	
 
