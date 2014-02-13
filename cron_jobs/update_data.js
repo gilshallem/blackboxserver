@@ -1,7 +1,6 @@
 var models = require ("../models");
 var fruefx = require('../external_apis/true_fx');
 var cronJob = require('cron').CronJob;
-var indicators = require('../indicators/indicators');
 
 var assets = {"EUR/USD":0,"USD/JPY":0,"GBP/USD":0,"EUR/GBP":0,
 		"USD/CHF":0,"EUR/JPY":0,"EUR/CHF":0,"USD/CAD":0,
@@ -68,7 +67,7 @@ function updateData(trueFxOutput) {
 		}
 	});
 	models.ForexHistory.create(newValues);
-	indicators.updateIndicators();
+	
 
 	
 
