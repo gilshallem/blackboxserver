@@ -24,7 +24,7 @@ exports.start = function() {
 
 function shrinkForexData() {
 	var now = new Date().getTime();
-	var before = now - (MAX_HISTORY_MINUTES * 60000);
+	var before = now - (MAX_FOREX_HISTORY_MINUTES * 60000);
 	models.ForexHistory.remove({ timestamp:{$lt: before} }, function(err) {
 		if (!err) {
 			console.log("Old data removed");
