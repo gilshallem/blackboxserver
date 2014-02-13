@@ -42,7 +42,7 @@ app.get('/getUpdates', function(req, res) {
 });
 
 app.get('/getHistory', function(req, res) {
-	models.ForexHistory.find({ asset:"EUR/USD" }).exec(function(err, result) { 
+	models.ForexHistory.find({ asset:"EUR/USD" }).select("timestamp bid").exec(function(err, result) { 
 		if (!err) { 
 			res.send(JSON.stringify(result));
 
@@ -52,7 +52,19 @@ app.get('/getHistory', function(req, res) {
 
 		};
 	}); 
-	//res.send("val=" + models.ForexHistory.find({  }));
+});
+
+app.get('/indicators', function(req, res) {
+	models.indicators.find({ asset:"EUR/USD" }).exec(function(err, result) { 
+		if (!err) { 
+			res.send(JSON.stringify(result));
+
+		} else {
+			console.log(err);
+			res.send(err);
+
+		};
+	}); 
 });
 
 app.get('/getStrategyData', function(req, res) {

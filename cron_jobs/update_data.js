@@ -1,6 +1,8 @@
 var models = require ("../models");
 var fruefx = require('../external_apis/true_fx');
 var cronJob = require('cron').CronJob;
+var indicators = require('../indicators/indicators');
+
 var assets = {"EUR/USD":0,"USD/JPY":0,"GBP/USD":0,"EUR/GBP":0,
 		"USD/CHF":0,"EUR/JPY":0,"EUR/CHF":0,"USD/CAD":0,
 		"AUD/USD":0,"GBP/JPY":0,"AUD/CAD":0,"AUD/CHF":0,
@@ -11,19 +13,24 @@ var assets = {"EUR/USD":0,"USD/JPY":0,"GBP/USD":0,"EUR/GBP":0,
 
 var MAX_HISTORY_MINUTES = 10;
 
+
+
 exports.start = function() {
 	var job = new cronJob({
 		cronTime: '* * * * *',
 		onTick: function() {
 			fruefx.getCurrencyUpdates(updateData);
 		},
-		start: true
+		start: false
 
 	});
+	fruefx.getCurrencyUpdates(updateData);
 	job.start();
 
-
 }
+
+
+
 
 function updateData(trueFxOutput) {
 	var j;
@@ -51,8 +58,18 @@ function updateData(trueFxOutput) {
 			console.log("Error removing data: "+ err.message);
 		}
 	});
+	models.indicators.remove({ timestamp:{$lt: before} }, function(err) {
+		if (!err) {
+			console.log("Old idicators data removed");
+			
+		}
+		else {
+			console.log("Error removing idicators data: "+ err.message);
+		}
+	});
 	models.ForexHistory.create(newValues);
+	indicators.updateIndicators();
 
-
+	
 
 }
