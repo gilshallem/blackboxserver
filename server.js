@@ -6,6 +6,7 @@ var fruefx = require('./external_apis/true_fx');
 var models = require ("./models") // TODO: remove
 var phoneValidation = require('./registration/phone_validation');
 var registration = require('./registration/registration');
+var keepAlive = require('./keep_alive');
 
 app.use(express.json());       // to support JSON-encoded bodies
 app.use(express.urlencoded()); // to support URL-encoded bodies
@@ -39,9 +40,7 @@ var getClientAddress = function (req) {
     req.connection.socket.remoteAddress;
 };
 
-app.get('/ping', function(req, res) {
-	res.send("pong");	
-});
+
 
 
 app.post('/validateNumber', function(req, res) {
@@ -72,7 +71,7 @@ app.post('/getHistory', function(req, res) {
 });
 
 
-
+keepAlive.keepAlive(app);
 
 var port = Number(process.env.PORT || 5000);
 
