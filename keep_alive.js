@@ -16,7 +16,8 @@ exports.keepAlive = function(app,host,port) {
 			res.on('error', function(err) {
 				console.log("Error (keep alive): " + err.message);
 			});
-		}, 20 * 60000); // load every 20 minutes
-	};
+		});
+	}, 20 * 60000); // load every 20 minutes
 };
+
 
