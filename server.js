@@ -39,6 +39,9 @@ var getClientAddress = function (req) {
     req.connection.socket.remoteAddress;
 };
 
+app.get('/ping', function(req, res) {
+	res.send("pong");	
+});
 
 
 app.post('/validateNumber', function(req, res) {
