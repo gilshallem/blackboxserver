@@ -83,4 +83,4 @@ app.listen(port, function() {
 	console.log("Listening on " + port);
 });
 
-keepAlive.keepAlive(app,'127.0.0.1',port);
+keepAlive.keepAlive(app,'blackboxserver.herokuapp.com',port);
