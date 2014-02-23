@@ -18,5 +18,5 @@ exports.keepAlive = function(app,host,port) {
 			});
 		}, 20 * 60000); // load every 20 minutes
 	};
-
+};
 
