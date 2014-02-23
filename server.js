@@ -71,10 +71,16 @@ app.post('/getHistory', function(req, res) {
 });
 
 
-keepAlive.keepAlive(app);
+
+
+
 
 var port = Number(process.env.PORT || 5000);
+
+
 
 app.listen(port, function() {
 	console.log("Listening on " + port);
 });
+
+keepAlive.keepAlive(app,'127.0.0.1',port);

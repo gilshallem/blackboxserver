@@ -1,29 +1,22 @@
-var http = require('http'); //importing http
+var http = require('http');
 
-exports.keepAlive = function(app) {
-	app.get('/keep_alive', function(req, res) {
-		res.send("keeping alive");	
+exports.keepAlive = function(app,host,port) {
+	app.get('/keepalive', function(req, res) {
+		res.send("1");	
 	});
-	
+
 	setInterval(function() {
-        var options = {
-            host: 'blackboxserver.herokuapp.com',
-            port: 80,
-            path: '/keep_alive'
-        };
-        http.get(options, function(res) {
-            res.on('data', function(chunk) {
-                try {
-                    // optional logging... disable after it's working
-                    console.log("HEROKU RESPONSE: " + chunk);
-                } catch (err) {
-                    console.log(err.message);
-                }
-            });
-        }).on('error', function(err) {
-            console.log("Error (keep alive): " + err.message);
-        });
-    }, 20 * 60000); // load every 20 minutes
-}
+		console.log("sending keep alive");
+		var options = {
+				host: host,
+				port: port,
+				path: '/keepalive'
+		};
+		http.get(options, function(res) {
+			res.on('error', function(err) {
+				console.log("Error (keep alive): " + err.message);
+			});
+		}, 20 * 60000); // load every 20 minutes
+	};
 
 
