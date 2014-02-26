@@ -59,8 +59,11 @@ app.post('/register', function(req, res) {
 });
 
 app.post('/getHistory', function(req, res) {
-	//TODO: limit
-	models.ForexHistory.find({ asset:req.body.asset }).select("timestamp bid").exec(function(err, result) { 
+	var query = models.ForexHistory.find({ asset:req.body.asset }).select("timestamp bid");
+	if (asset:req.body.from!=null) {
+		query.where('timestamp').gt(asset:req.body.from);
+	}
+	query.exec(function(err, result) { 
 		if (!err) {
 			res.send(JSON.stringify(result));
 		} else {
