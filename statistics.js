@@ -44,11 +44,6 @@ exports.start = function() {
 	    values[i] = statisticsConfig[i].start;
 	    strings[i] =getForamttedStatString(i);
 	    startUpdating(i);
-	   /* setInterval(function() {
-	    	 console.log("updating stats " + conf.start);
-	    	var i=0;
-	    	values[i]=Math.min(Math.max(values[i]+getRandom(statisticsConfig[i].minAddition,statisticsConfig[i].maxAddition),statisticsConfig[i].min),statisticsConfig[i].max);
-		}, statisticsConfig[i].interval);*/
 	}
 	
 };

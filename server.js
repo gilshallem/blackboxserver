@@ -75,7 +75,7 @@ app.post('/getHistory', function(req, res) {
 	}); 
 });
 
-app.get('/getStatistics', function(req, res) {
+app.post('/getStatistics', function(req, res) {
 	res.send(JSON.stringify(statistics.getStatistics()));
 });
 
