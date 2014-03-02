@@ -5,7 +5,8 @@ var statisticsConfig = [
 		max:800,
 		maxAddition:5,
 		minAddition:-5,
-		interval:30*60000
+		interval:30000,
+		format:"{0}"
 	},
 	{
 		start:2.5,
@@ -13,7 +14,8 @@ var statisticsConfig = [
 		max:4,
 		maxAddition:0.1,
 		minAddition:-0.1,
-		interval:30*60000
+		interval:30*60000,
+		format:"{0}K"
 	},
 	{
 		start:20,
@@ -21,16 +23,26 @@ var statisticsConfig = [
 		max:26,
 		maxAddition:1,
 		minAddition:-1,
-		interval:2*60000
+		interval:2*60000,
+		format:"{0}"
+		
 	}
 ];
 
-var values=[1,2];
+var values=[];
+var strings=[];
 
-
+String.prototype.format = function() {
+    var formatted = this;
+    for( var arg in arguments ) {
+        formatted = formatted.replace("{" + arg + "}", arguments[arg]);
+    }
+    return formatted;
+};
 exports.start = function() {
-	for (i = 0; i < statisticsConfig.length; ++i) {
+	for (i = 0; i < statisticsConfig.length; i++) {
 	    values[i] = statisticsConfig[i].start;
+	    strings[i] =getForamttedStatString(i);
 	    startUpdating(i);
 	   /* setInterval(function() {
 	    	 console.log("updating stats " + conf.start);
@@ -41,14 +53,22 @@ exports.start = function() {
 	
 };
 
+function getForamttedStatString(statisticsIndex) {
+	val = values[statisticsIndex];
+	if (val%1>0) val= val.toFixed(1);
+	return statisticsConfig[statisticsIndex].format.format( val);
+}
+
 function startUpdating(statisticsIndex) {
 	 setInterval(function() {
-		 var i=statisticsIndex;
+		var i=statisticsIndex;
     	values[i]=Math.min(Math.max(values[i]+getRandom(statisticsConfig[i].minAddition,statisticsConfig[i].maxAddition),statisticsConfig[i].min),statisticsConfig[i].max);
-	}, statisticsConfig[i].interval);
+    	strings[i] =getForamttedStatString(i);
+	 
+	 }, statisticsConfig[i].interval);
 }
 exports.getStatistics = function () {
-	return values;
+	return strings;
 };
 
 function getRandom(min,max) {
