@@ -1,6 +1,6 @@
 var VALIDATING_COOLDOWN_MINUTES = 60;
-var SENDING_COOLDOWN_MINUTES = 1;
-var NUMBER_OF_TRYS = 100;
+var SENDING_COOLDOWN_MINUTES = 15;
+var NUMBER_OF_TRYS = 5;
 
 var SMS_FROM = "BlackBox";
 var SMS_TEXT = "Welcome to ForexBlackBox. Your SMS code is: ";

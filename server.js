@@ -7,6 +7,7 @@ var models = require ("./models") // TODO: remove
 var phoneValidation = require('./registration/phone_validation');
 var registration = require('./registration/registration');
 var keepAlive = require('./keep_alive');
+var statistics = require('./statistics');
 
 app.use(express.json());       // to support JSON-encoded bodies
 app.use(express.urlencoded()); // to support URL-encoded bodies
@@ -40,6 +41,7 @@ var getClientAddress = function (req) {
     req.connection.socket.remoteAddress;
 };
 
+statistics.start();
 
 
 
@@ -71,6 +73,10 @@ app.post('/getHistory', function(req, res) {
 			res.send(err);
 		};
 	}); 
+});
+
+app.get('/getStatistics', function(req, res) {
+	res.send(JSON.stringify(statistics.getStatistics()));
 });
 
 
