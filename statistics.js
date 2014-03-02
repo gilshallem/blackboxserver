@@ -1,6 +1,6 @@
 var statisticsConfig = [
 	{
-		start:500,
+		start:523,
 		min:200,
 		max:800,
 		maxAddition:5,
@@ -9,7 +9,7 @@ var statisticsConfig = [
 		format:"{0}"
 	},
 	{
-		start:2.5,
+		start:2.6,
 		min:1.2,
 		max:4,
 		maxAddition:0.1,
@@ -18,7 +18,7 @@ var statisticsConfig = [
 		format:"{0}K"
 	},
 	{
-		start:20,
+		start:19,
 		min:15,
 		max:26,
 		maxAddition:1,
