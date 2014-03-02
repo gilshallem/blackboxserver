@@ -5,7 +5,7 @@ var statisticsConfig = [
 		max:800,
 		maxAddition:5,
 		minAddition:-5,
-		interval:30000,
+		interval:1000,
 		format:"{0}"
 	},
 	{
