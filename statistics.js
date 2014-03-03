@@ -14,15 +14,6 @@ var statisticsConfig = [
 		minAddition:-0.1,
 		interval:30*60000,
 		format:"{0}K"
-	},
-	{
-		min:15,
-		max:26,
-		maxAddition:1,
-		minAddition:-1,
-		interval:2*60000,
-		format:"{0}"
-		
 	}
 ];
 
@@ -60,7 +51,7 @@ function startUpdating(statisticsIndex) {
 	 }, statisticsConfig[i].interval);
 }
 exports.getStatistics = function () {
-	return strings;
+	return strings.slice(0);
 };
 
 function getRandom(min,max) {

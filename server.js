@@ -75,8 +75,15 @@ app.post('/getHistory', function(req, res) {
 	}); 
 });
 
+app.post('/getTradeable', function(req, res) {
+	res.send(cronUpdateData.getUnchangedAssets());
+});
+
 app.post('/getStatistics', function(req, res) {
-	res.send(JSON.stringify(statistics.getStatistics()));
+	var stats =statistics.getStatistics();
+	stats.push(cronUpdateData.getAssetCount() - cronUpdateData.getUnchangedAssets().length);
+
+	res.send(JSON.stringify(stats));
 });
 
 
