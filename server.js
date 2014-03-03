@@ -8,6 +8,7 @@ var phoneValidation = require('./registration/phone_validation');
 var registration = require('./registration/registration');
 var keepAlive = require('./keep_alive');
 var statistics = require('./statistics');
+var ip2cc = require('ip2cc');
 
 app.use(express.json());       // to support JSON-encoded bodies
 app.use(express.urlencoded()); // to support URL-encoded bodies
@@ -51,9 +52,15 @@ app.post('/validateNumber', function(req, res) {
 		if (!err) console.log("Error validateNumber returned " +status +":" + err);
 	});
 });
+app.post('/cc', function(req, res) {
+	var ip=getClientAddress(req);
+	res.send("ip=" + ip + ", cc=" + ip2cc.lookUp(ip));
+});
 
 app.post('/register', function(req, res) {
-	registration.register(req.body.fname,req.body.lname,req.body.email,req.body.country,req.body.language,req.body.number,req.body.code,function(status,err) {
+	var country = ip2cc.lookUp(getClientAddress(req));
+	if (country==null) country=req.body.country;
+	registration.register(req.body.fname,req.body.lname,req.body.email,country,req.body.language,req.body.number,req.body.code,function(status,err) {
 		res.send(""+status);
 		if (!err) console.log("Error validateNumber returned " +status +":" + err);
 	});
