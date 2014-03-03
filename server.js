@@ -80,10 +80,16 @@ app.post('/getTradeable', function(req, res) {
 });
 
 app.post('/getStatistics', function(req, res) {
-	var stats =statistics.getStatistics();
-	stats.push(cronUpdateData.getAssetCount() - cronUpdateData.getUnchangedAssets().length);
-
-	res.send(JSON.stringify(stats));
+	
+	var totalTradable = cronUpdateData.getAssetCount() - cronUpdateData.getUnchangedAssets().length;
+	if (totalTradable>0) {
+		var stats=statistics.getStatistics();
+		stats.push(""+totalTradable);
+		res.send(JSON.stringify(stats));
+	}
+	else {
+		res.send(JSON.stringify(["0","0","0"]));
+	}
 });
 
 

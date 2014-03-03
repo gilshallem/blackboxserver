@@ -2,7 +2,7 @@ var models = require ("../models");
 var fruefx = require('../external_apis/true_fx');
 var cronJob = require('cron').CronJob;
 
-var MAX_UNCHANGE_INTERVALS = 3;
+var MAX_UNCHANGE_INTERVALS = 5;
 
 var assets = {
 		"EUR/USD":{bid:0,noChange:0},
