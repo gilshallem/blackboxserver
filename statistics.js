@@ -19,7 +19,7 @@ var statisticsConfig = [
 
 var values=[];
 var strings=[];
-
+ 
 String.prototype.format = function() {
     var formatted = this;
     for( var arg in arguments ) {
