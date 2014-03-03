@@ -52,10 +52,6 @@ app.post('/validateNumber', function(req, res) {
 		if (!err) console.log("Error validateNumber returned " +status +":" + err);
 	});
 });
-app.post('/cc', function(req, res) {
-	var ip=getClientAddress(req);
-	res.send("ip=" + ip + ", cc=" + ip2cc.lookUp(ip));
-});
 
 app.post('/register', function(req, res) {
 	var country = ip2cc.lookUp(getClientAddress(req));
