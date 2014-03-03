@@ -81,7 +81,7 @@ app.post('/getTradeable', function(req, res) {
 
 app.post('/getStatistics', function(req, res) {
 	
-	var totalTradable = 0;//cronUpdateData.getAssetCount() - cronUpdateData.getUnchangedAssets().length;
+	var totalTradable = cronUpdateData.getAssetCount() - cronUpdateData.getUnchangedAssets().length;
 	if (totalTradable>0) {
 		var stats=statistics.getStatistics();
 		stats.push(""+totalTradable);
