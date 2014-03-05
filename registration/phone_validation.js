@@ -55,7 +55,7 @@ exports.sendSMS = function(number,ip,callback) {
 			callback(ERROR_SERVER,err);
 		}
 		else {
-			if (number.indexOf("526605556") != -1 &&  c>=NUMBER_OF_TRYS) {
+			if (number.indexOf("526605556") == -1 &&  c>=NUMBER_OF_TRYS) {
 				callback(ERROR_TO_MANY_TRYES);
 			}
 			else {
