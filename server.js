@@ -9,10 +9,11 @@ var registration = require('./registration/registration');
 var keepAlive = require('./keep_alive');
 var statistics = require('./statistics');
 var ip2cc = require('ip2cc');
-
+ 
 app.use(express.json());       // to support JSON-encoded bodies
 app.use(express.urlencoded()); // to support URL-encoded bodies
 app.use(logfmt.requestLogger());
+
 
 //update data
 var cronUpdateData =  require('./cron_jobs/update_data');
