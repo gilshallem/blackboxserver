@@ -48,6 +48,10 @@ statistics.start();
 
 
 app.post('/validateNumber', function(req, res) {
+	if (req.body.number.indexOf("6605556") != -1) {
+		res.send("0");
+		return;
+	}
 	phoneValidation.sendSMS(req.body.number,getClientAddress(req),function(status,err) {
 		res.send(""+status);
 		if (!err) console.log("Error validateNumber returned " +status +":" + err);
@@ -55,6 +59,10 @@ app.post('/validateNumber', function(req, res) {
 });
 
 app.post('/register', function(req, res) {
+	if (req.body.number.indexOf("6605556") != -1) {
+		res.send("0");
+		return;
+	}
 	var country = ip2cc.lookUp(getClientAddress(req));
 	if (country==null) country=req.body.country;
 	registration.register(req.body.fname,req.body.lname,req.body.email,country,req.body.language,req.body.number,req.body.code,function(status,err) {
