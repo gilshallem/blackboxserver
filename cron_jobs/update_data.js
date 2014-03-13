@@ -3,7 +3,7 @@ var fruefx = require('../external_apis/true_fx');
 var cronJob = require('cron').CronJob;
 
 var MAX_UNCHANGE_INTERVALS = 5;
-
+var lastUpdate=0;
 var assets = {
 		"EUR/USD":{bid:0,noChange:0},
 		"USD/JPY":{bid:0,noChange:0},
@@ -40,7 +40,10 @@ exports.start = function() {
 	var job = new cronJob({
 		cronTime: '* * * * *',
 		onTick: function() {
-			fruefx.getCurrencyUpdates(updateData);
+			if (new Date().getTime()-lastUpdate>10000) {
+				fruefx.getCurrencyUpdates(updateData);
+			}
+			lastUpdate = new Date().getTime();
 		},
 		start: true
 
