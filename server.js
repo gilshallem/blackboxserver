@@ -1,6 +1,7 @@
+var GA_ID = "UA-48891127-2";
+
 var express = require("express");
 var logfmt = require("logfmt");
-var app = express();
 var mongoose = require ("mongoose");
 var fruefx = require('./external_apis/true_fx');
 var models = require ("./models") // TODO: remove
@@ -10,16 +11,30 @@ var keepAlive = require('./keep_alive');
 var statistics = require('./statistics');
 var ip2cc = require('ip2cc');
 var tracker = require('pixel-tracker')
+var ua = require("universal-analytics");
+
+var app = express();
 
 app.use(express.json());       // to support JSON-encoded bodies
 app.use(express.urlencoded()); // to support URL-encoded bodies
 app.use(logfmt.requestLogger());
+app.use(express.cookieParser("blackbox"));
+app.use(ua.middleware(GA_ID, {cookieName: '_ga'}));
 
 //tracker.configure({disable_cookies:true})
 
 tracker.use(function (error, result) {
 	  console.log(result)
-
+	  var visitor;
+	  if (result.cookies!=null && result.cookies._tracker!=null) {
+		  visitor= ua(GA_ID, result.cookies._tracker);
+	  } 
+	  else {
+		  visitor= ua(GA_ID);
+	  }
+	  visitor.event("Test Category", "Test pixel",function(err) {
+		  console.log("err=" + err);
+	  }).send()
 	  /*
 	  {
 	    "cookies": { "_tracker": "58f911166e6d31041eba8d06e11e3f77" },
@@ -92,7 +107,7 @@ app.post('/register', function(req, res) {
 	}
 	var country = ip2cc.lookUp(getClientAddress(req));
 	if (country==null) country=req.body.country;
-	registration.register(req.body.fname,req.body.lname,req.body.email,country,req.body.language,req.body.number,req.body.code,function(status,err) {
+	registration.register(req.body.fname,req.body.lname,req.body.email,req.body.number,country,req.body.language,req.body.code,function(status,err) {
 		res.send(""+status);
 		if (!err) console.log("Error validateNumber returned " +status +":" + err);
 	});
