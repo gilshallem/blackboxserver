@@ -114,6 +114,10 @@ app.post('/register', function(req, res) {
 	
 });
 
+app.post('/openApp', function(req, res) {
+	res.send("0");
+});
+
 app.post('/getHistory', function(req, res) {
 	var query = models.ForexHistory.find({ asset:req.body.asset }).select("timestamp bid");
 	if (req.body.from!=null) {
