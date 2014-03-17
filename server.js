@@ -10,8 +10,9 @@ var registration = require('./registration/registration');
 var keepAlive = require('./keep_alive');
 var statistics = require('./statistics');
 var ip2cc = require('ip2cc');
-var tracker = require('pixel-tracker')
+var pixelTracker= require('pixel-tracker')
 var ua = require("universal-analytics");
+var tracker  = require ("./tracker")
 
 var app = express();
 
@@ -21,21 +22,11 @@ app.use(logfmt.requestLogger());
 app.use(express.cookieParser("blackbox"));
 app.use(ua.middleware(GA_ID, {cookieName: '_ga'}));
 
-//tracker.configure({disable_cookies:true})
 
-tracker.use(function (error, result) {
-	  console.log(result)
-	  var visitor;
-	  if (result.cookies!=null && result.cookies._tracker!=null) {
-		  visitor= ua(GA_ID, result.cookies._tracker);
-	  } 
-	  else {
-		  visitor= ua(GA_ID);
-	  }
-	  visitor.event("Test Category", "Test pixel",function(err) {
-		  console.log("err=" + err);
-	  }).send()
-	  /*
+
+pixelTracker.use(function (error, result) {
+	//console.log(result)
+	/*
 	  {
 	    "cookies": { "_tracker": "58f911166e6d31041eba8d06e11e3f77" },
 	    "host": "localhost:3000",
@@ -48,13 +39,37 @@ tracker.use(function (error, result) {
 	    "geo": { "ip": "127.0.0.1" },
 	    "domain": "localhost"
 	  }
-	  */
+	 */
+
+	// save to google statistics
+	var visitor;
+	if (result.cookies!=null && result.cookies._tracker!=null) {
+		visitor= ua(GA_ID, result.cookies._tracker);
+	} 
+	else {
+		visitor= ua(GA_ID);
+	}
+	visitor.event(result.cat, "Seen" ,result.ref,function(err) {
+		if (err) {
+			console.log("err analitics seen=" + err);
+		}
+	}).send()
+
+	// upsert ip
+	tracker.registerUser(result.geo.ip,result.cat,result.ref,result.override,
+			function() {
+		//console.log("ip registered");
+	},
+	function() {
+		console.log("ip registeration error");
+	});
+
 
 });
 
 //dont kill server on errors
 process.on('uncaughtException', function (err) {
-    console.log(err);
+	console.log(err);
 }); 
 
 //update data
@@ -79,15 +94,64 @@ var uristring =
 		}
 	});
 var getClientAddress = function (req) {
-    return (req.headers['x-forwarded-for'] || '').split(',')[0] 
-    || req.connection.remoteAddress || 
-    req.socket.remoteAddress ||
-    req.connection.socket.remoteAddress;
+	return (req.headers['x-forwarded-for'] || '').split(',')[0] 
+	|| req.connection.remoteAddress || 
+	req.socket.remoteAddress ||
+	req.connection.socket.remoteAddress;
 };
 
 statistics.start();
 
-app.all('/pixel.gif', tracker.middleware);
+app.post('/openApp', function(req, res) {
+	console.log("looking for " + getClientAddress(req));
+	tracker.getRef(getClientAddress(req),function(ref,cat) {
+		if (ref && cat) {
+			var visitor= ua(GA_ID);
+			visitor.event(cat, "Downloaded" ,ref,function(err) {
+				console.log("err=" + err);
+			}).send();
+
+			res.send("cat=" + cat + ",ref=" + ref);
+			console.log("found");
+
+		}
+		else {
+			res.send("1");
+		}
+
+	},function() {
+		console.log("Error looking for tracker user");
+	});
+
+
+});
+
+app.all('/pixel.gif', pixelTracker.middleware);
+app.get('/link', function (req,res) {
+	if (req.query.cat && req.query.ref) {
+		var token = tracker.getTrackerId(req,res);
+		visitor= ua(GA_ID, token);
+		visitor.event(req.query.cat, "Clicked" ,req.query.ref,function(err) {
+			if (err) {
+				console.log("err analitics clicked=" + err);
+			}
+		}).send();
+		
+		// upsert ip
+		tracker.registerUser(getClientAddress(req),req.query.cat,req.query.ref,req.query.override,
+				function() {
+			console.log("ip registered");
+			
+		},
+		function() {
+			console.log("ip registeration error");
+		});
+	}
+	var redUrl = req.query.u;
+	if (redUrl==null) redUrl = "https://play.google.com/store/apps/details?id=com.gilapps.forexblackbox";
+	res.redirect(redUrl);
+	//res.send("1");
+});
 
 app.post('/validateNumber', function(req, res) {
 	if (req.body.number.indexOf("6605556") != -1) {
@@ -96,7 +160,7 @@ app.post('/validateNumber', function(req, res) {
 	}
 	phoneValidation.sendSMS(req.body.number,getClientAddress(req),function(status,err) {
 		res.send(""+status);
-		if (!err) console.log("Error validateNumber returned " +status +":" + err);
+		if (err) console.log("Error validateNumber returned " +status +":" + err);
 	});
 });
 
@@ -105,18 +169,33 @@ app.post('/register', function(req, res) {
 		res.send("0");
 		return;
 	}
-	var country = ip2cc.lookUp(getClientAddress(req));
-	if (country==null) country=req.body.country;
-	registration.register(req.body.fname,req.body.lname,req.body.email,req.body.number,country,req.body.language,req.body.code,function(status,err) {
-		res.send(""+status);
-		if (!err) console.log("Error validateNumber returned " +status +":" + err);
+	tracker.getRef(getClientAddress(req),function(ref,cat) {
+		//analitcs
+		if (ref && cat) {
+			var visitor= ua(GA_ID);
+			visitor.event(cat, "Lead" ,ref,function(err) {
+				console.log("stat Lead err=" + err);
+			}).send();
+
+		}
+		var country = ip2cc.lookUp(getClientAddress(req));
+		if (country==null) country=req.body.country;
+		registration.register(req.body.fname,req.body.lname,req.body.email,country,req.body.language,cat,ref,req.body.number,req.body.code,function(status,err) {
+			res.send(""+status);
+			if (err) console.log("Error /register returned " +status +":" + err);
+		});
+
+	},function() {
+		console.log("Error looking for tracker user");
+		res.send("88");
 	});
 	
+	
+	
+
 });
 
-app.post('/openApp', function(req, res) {
-	res.send("0");
-});
+
 
 app.post('/getHistory', function(req, res) {
 	var query = models.ForexHistory.find({ asset:req.body.asset }).select("timestamp bid");

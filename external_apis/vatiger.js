@@ -3,7 +3,7 @@ var PUBLIC_ID = "3b061aa05b684bbb4fa18390d64cbc9e";
 var FORM_NAME = "Leads from App";
 
 var needle = require('needle');
-exports.addLead = function(fname,lname,email,country,phone,language,callback) {
+exports.addLead = function(fname,lname,email,country,phone,language,refCat,ref,callback) {
 	needle.post(ACTION_URL, {
 		publicid:PUBLIC_ID,
 		name:FORM_NAME,

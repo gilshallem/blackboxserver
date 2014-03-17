@@ -18,10 +18,8 @@ exports.phoneValidate = mongoose.model('phone_validation',new mongoose.Schema({
 
 exports.tracker = mongoose.model('tracker',new mongoose.Schema({
 	ip: String,
-	id:  String,
-	referal_category: String,
-	referal: String,
-	is_pixel: Boolean,
+	refferal_category: String,
+	refferal: String,
 	timestamp: Number
 
 },{ autoIndex: false }));
