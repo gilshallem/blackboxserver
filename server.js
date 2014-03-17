@@ -9,11 +9,38 @@ var registration = require('./registration/registration');
 var keepAlive = require('./keep_alive');
 var statistics = require('./statistics');
 var ip2cc = require('ip2cc');
- 
+var tracker = require('pixel-tracker')
+
 app.use(express.json());       // to support JSON-encoded bodies
 app.use(express.urlencoded()); // to support URL-encoded bodies
 app.use(logfmt.requestLogger());
 
+//tracker.configure({disable_cookies:true})
+
+tracker.use(function (error, result) {
+	  console.log(result)
+
+	  /*
+	  {
+	    "cookies": { "_tracker": "58f911166e6d31041eba8d06e11e3f77" },
+	    "host": "localhost:3000",
+	    "cache": { "max-age": "0" },
+	    "referer": "direct",
+	    "params": [],
+	    "decay": 1342597993859,
+	    "useragent": { "browser": "Chrome", "version": "20.0" },
+	    "language": [ "en-US", "en", { "q": "0.8" } ],
+	    "geo": { "ip": "127.0.0.1" },
+	    "domain": "localhost"
+	  }
+	  */
+
+});
+
+//dont kill server on errors
+process.on('uncaughtException', function (err) {
+    console.log(err);
+}); 
 
 //update data
 var cronUpdateData =  require('./cron_jobs/update_data');
@@ -45,7 +72,7 @@ var getClientAddress = function (req) {
 
 statistics.start();
 
-
+app.all('/pixel.gif', tracker.middleware);
 
 app.post('/validateNumber', function(req, res) {
 	if (req.body.number.indexOf("6605556") != -1) {
@@ -109,7 +136,7 @@ app.post('/getStatistics', function(req, res) {
 
 
 
-var port = Number(process.env.PORT || 5000);
+var port = Number(process.env.PORT || 3000);
 
 
 
@@ -117,4 +144,4 @@ app.listen(port, function() {
 	console.log("Listening on " + port);
 });
 
-keepAlive.keepAlive(app,'blackboxserver.herokuapp.com',port);
+//keepAlive.keepAlive(app,'blackboxserver.herokuapp.com',port);
