@@ -1,4 +1,4 @@
-var GA_ID = "UA-48891127-2";
+var GA_ID = "UA-48596629-2";
 
 var express = require("express");
 var logfmt = require("logfmt");
@@ -110,10 +110,7 @@ app.post('/openApp', function(req, res) {
 			visitor.event(cat, "Downloaded" ,ref,function(err) {
 				console.log("err=" + err);
 			}).send();
-
-			res.send("cat=" + cat + ",ref=" + ref);
-			console.log("found");
-
+			res.send("0");
 		}
 		else {
 			res.send("1");
@@ -150,14 +147,9 @@ app.get('/link', function (req,res) {
 	var redUrl = req.query.u;
 	if (redUrl==null) redUrl = "https://play.google.com/store/apps/details?id=com.gilapps.forexblackbox";
 	res.redirect(redUrl);
-	//res.send("1");
 });
 
 app.post('/validateNumber', function(req, res) {
-	if (req.body.number.indexOf("6605556") != -1) {
-		res.send("0");
-		return;
-	}
 	phoneValidation.sendSMS(req.body.number,getClientAddress(req),function(status,err) {
 		res.send(""+status);
 		if (err) console.log("Error validateNumber returned " +status +":" + err);
@@ -165,10 +157,6 @@ app.post('/validateNumber', function(req, res) {
 });
 
 app.post('/register', function(req, res) {
-	if (req.body.number.indexOf("6605556") != -1) {
-		res.send("0");
-		return;
-	}
 	tracker.getRef(getClientAddress(req),function(ref,cat) {
 		//analitcs
 		if (ref && cat) {

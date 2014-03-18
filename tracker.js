@@ -1,4 +1,4 @@
-var IP_KEEP_MINUTES = 30;
+var IP_KEEP_MINUTES = 60;
 var models = require ("./models");
 
 exports.registerUser = function(ip,refCategory,ref,shouldOveride,callback,err) {

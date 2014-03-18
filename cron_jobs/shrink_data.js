@@ -1,5 +1,6 @@
 var MAX_FOREX_HISTORY_MINUTES 				= 90;
 var MAX_PHONE_VALIDATION_HISTORY_MINUTES 	= 30;
+var MAX_TRACKER_MINUTES 					= 60;
 
 
 var models = require ("../models");
@@ -13,6 +14,7 @@ exports.start = function() {
 			console.log("shrinking db");
 			shrinkForexData();
 			shrinkPhoneValidation();
+			shrinkTracker();
 		},
 		start: true
 
@@ -40,6 +42,20 @@ function shrinkPhoneValidation() {
 	var now = new Date().getTime();
 	var before = now - (MAX_PHONE_VALIDATION_HISTORY_MINUTES * 60000);
 	models.phoneValidate.remove({ timestamp:{$lt: before} }, function(err) {
+		if (!err) {
+			console.log("Old data removed");
+			
+		}
+		else {
+			console.log("Error removing data: "+ err.message);
+		}
+	});
+}
+
+function shrinkTracker() {
+	var now = new Date().getTime();
+	var before = now - (MAX_TRACKER_MINUTES * 60000);
+	models.tracker.remove({ timestamp:{$lt: before} }, function(err) {
 		if (!err) {
 			console.log("Old data removed");
 			

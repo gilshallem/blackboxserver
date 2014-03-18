@@ -12,7 +12,9 @@ exports.addLead = function(fname,lname,email,country,phone,language,refCat,ref,c
 		mobile:phone,
 		email:email,
 		country:country,
-		"label:Language":language
+		"label:Language":language,
+		"label:Refferal_Category" : refCat,
+		"label:Refferal" : ref
 	}, function(err, resp, body) {
 		if (err) {
 			callback(-1,err);
