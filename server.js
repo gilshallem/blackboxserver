@@ -12,7 +12,8 @@ var statistics = require('./statistics');
 var ip2cc = require('ip2cc');
 var pixelTracker= require('pixel-tracker')
 var ua = require("universal-analytics");
-var tracker  = require ("./tracker")
+var tracker  = require ("./tracker");
+var e164 = require('e164');
 
 var app = express();
 
@@ -158,19 +159,26 @@ app.post('/validateNumber', function(req, res) {
 
 app.post('/register', function(req, res) {
 	tracker.getRef(getClientAddress(req),function(ref,cat) {
-		//analitcs
-		if (ref && cat) {
-			var visitor= ua(GA_ID);
-			visitor.event(cat, "Lead" ,ref,function(err) {
-				console.log("stat Lead err=" + err);
-			}).send();
-
-		}
-		var country = ip2cc.lookUp(getClientAddress(req));
+	
+		var country = e164.lookup(req.body.number);// ip2cc.lookUp(getClientAddress(req));
+		if (country==null) country=ip2cc.lookUp(getClientAddress(req));
 		if (country==null) country=req.body.country;
 		registration.register(req.body.fname,req.body.lname,req.body.email,country,req.body.language,cat,ref,req.body.number,req.body.code,function(status,err) {
 			res.send(""+status);
-			if (err) console.log("Error /register returned " +status +":" + err);
+			if (err) {
+				console.log("Error /register returned " +status +":" + err);
+			}
+			if (status==0) {
+				//analitcs
+				if (ref && cat) {
+					var visitor= ua(GA_ID);
+					visitor.event(cat, "Lead" ,ref,function(err) {
+						console.log("stat Lead err=" + err);
+					}).send();
+
+				}
+			}
+			
 		});
 
 	},function() {
