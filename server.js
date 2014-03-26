@@ -81,6 +81,10 @@ cronUpdateData.start();
 var cronShrinkData =  require('./cron_jobs/shrink_data');
 cronShrinkData.start();
 
+//send pending leads
+var cronSendLeads =  require('./cron_jobs/send_leads');
+cronSendLeads.start();
+
 //connect to db
 var uristring =
 	process.env.MONGOLAB_URI ||
@@ -134,12 +138,12 @@ app.get('/link', function (req,res) {
 				console.log("err analitics clicked=" + err);
 			}
 		}).send();
-		
+
 		// upsert ip
 		tracker.registerUser(getClientAddress(req),req.query.cat,req.query.ref,req.query.override,
 				function() {
 			console.log("ip registered");
-			
+
 		},
 		function() {
 			console.log("ip registeration error");
@@ -148,6 +152,39 @@ app.get('/link', function (req,res) {
 	var redUrl = req.query.u;
 	if (redUrl==null) redUrl = "https://play.google.com/store/apps/details?id=com.gilapps.forexblackbox";
 	res.redirect(redUrl);
+});
+
+app.post('/getLeads', function(req, res) {
+	if (req.body.pass=="gil113322") { 
+		models.leads.find().sort([['timestamp', 'descending']]).exec(function(err, result) { 
+			if (!err) {
+				var html = "<html><head></head><body><table border='1' width='100%'>";
+				html = html + "<tr><td>Date</td><td>First Name</td><td>Last Name</td><td>Email</td><td>Phone</td><td>Country</td><td>Language</td><td>Category</td><td>Reffereal</td><td>Sent to CRM</td></tr>"
+				var lead;
+				for (var i = 0; i < result.length; i++) {
+					lead = result[i];
+					var date = new Date(result[i].timestamp).toISOString().replace(/T/, ' ').replace(/\..+/, '');
+					html = html + "<tr>";
+					html = html + "<td>" + date + "</td>";
+					html = html + "<td>" + result[i].firstName + "</td>";
+					html = html + "<td>" + result[i].lastName + "</td>";
+					html = html + "<td>" + result[i].email + "</td>";
+					html = html + "<td>" + result[i].phone + "</td>";
+					html = html + "<td>" + result[i].country + "</td>";
+					html = html + "<td>" + result[i].language + "</td>";
+					html = html + "<td>" + result[i].refCat + "</td>";
+					html = html + "<td>" + result[i].ref + "</td>";
+					html = html + "<td>" + result[i].sentToCRM + "</td>";
+					html = html + "</tr>";
+				}
+				html = html + "</table></body></html>"
+				res.send(html);
+			} else {
+				console.log(err);
+				res.send(err);
+			};
+		}); 
+	} // pass check end
 });
 
 app.post('/validateNumber', function(req, res) {
@@ -159,7 +196,7 @@ app.post('/validateNumber', function(req, res) {
 
 app.post('/register', function(req, res) {
 	tracker.getRef(getClientAddress(req),function(ref,cat) {
-	
+
 		var country = e164.lookup(req.body.number);// ip2cc.lookUp(getClientAddress(req));
 		if (country==null) country=ip2cc.lookUp(getClientAddress(req));
 		if (country==null) country=req.body.country;
@@ -178,16 +215,16 @@ app.post('/register', function(req, res) {
 
 				}
 			}
-			
+
 		});
 
 	},function() {
 		console.log("Error looking for tracker user");
 		res.send("88");
 	});
-	
-	
-	
+
+
+
 
 });
 

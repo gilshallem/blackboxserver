@@ -1,6 +1,7 @@
 var MAX_FOREX_HISTORY_MINUTES 				= 90;
 var MAX_PHONE_VALIDATION_HISTORY_MINUTES 	= 30;
 var MAX_TRACKER_MINUTES 					= 60;
+var MAX_LEADS_DAYS		 					= 7;
 
 
 var models = require ("../models");
@@ -15,6 +16,7 @@ exports.start = function() {
 			shrinkForexData();
 			shrinkPhoneValidation();
 			shrinkTracker();
+			shrinkLeads();
 		},
 		start: true
 
@@ -66,3 +68,17 @@ function shrinkTracker() {
 	});
 }
 
+
+function shrinkLeads() {
+	var now = new Date().getTime();
+	var before = now - (MAX_LEADS_DAYS * 86400000);
+	models.leads.remove({ timestamp:{$lt: before} }, function(err) {
+		if (!err) {
+			console.log("Old leads removed");
+			
+		}
+		else {
+			console.log("Error removing leads: "+ err.message);
+		}
+	});
+}

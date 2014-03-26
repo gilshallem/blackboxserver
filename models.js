@@ -16,6 +16,19 @@ exports.phoneValidate = mongoose.model('phone_validation',new mongoose.Schema({
 
 },{ autoIndex: false }));
 
+exports.leads = mongoose.model('leads',new mongoose.Schema({
+	firstName: String,
+	lastName:  String,
+	email:  String,
+	country:  String,
+	phone:  String,
+	language:  String,
+	refCat:  String,
+	ref:  String,
+	sentToCRM: Boolean,
+	timestamp: Number
+},{ autoIndex: false }));
+
 exports.tracker = mongoose.model('tracker',new mongoose.Schema({
 	ip: String,
 	refferal_category: String,
