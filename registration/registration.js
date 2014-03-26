@@ -6,7 +6,7 @@ exports.register = function(fname,lname,email,country,language,refCat,ref,number
 	phoneValidation.validatePhone(number,code,function(status,err) {
 		// if phone validated
 		if (status==0) {
-			isAllreadyRegistered(number,function(isPhoneRegistered) {
+			isAllreadyRegistered(number,fname,lname,function(isPhoneRegistered) {
 				if (isPhoneRegistered) {
 					callback(0);
 				}
@@ -48,9 +48,9 @@ exports.register = function(fname,lname,email,country,language,refCat,ref,number
 
 };
 
-function isAllreadyRegistered(phone,callback) {
+function isAllreadyRegistered(phone,firstName,lastName,callback) {
 	var now = new Date().getTime();
-	models.leads.findOne({ phone: phone }
+	models.leads.findOne({$and: [{ phone: phone},{firstName:firstName},{lastName:lastName}] }
 	, function(err, phoneRow)  { 
 		if (phoneRow) {
 			callback(true);
