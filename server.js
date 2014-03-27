@@ -108,22 +108,31 @@ var getClientAddress = function (req) {
 statistics.start();
 
 app.post('/openApp', function(req, res) {
-	console.log("looking for " + getClientAddress(req));
-	tracker.getRef(getClientAddress(req),function(ref,cat) {
-		if (ref && cat) {
-			var visitor= ua(GA_ID);
-			visitor.event(cat, "Downloaded" ,ref,function(err) {
-				console.log("err=" + err);
-			}).send();
-			res.send("0");
-		}
-		else {
-			res.send("1");
-		}
+	if (req.body.cat && req.body.ref) {
+		var visitor= ua(GA_ID);
+		visitor.event(req.body.cat, "Downloaded" ,req.body.ref,function(err) {
+			console.log("err=" + err);
+		}).send();
+		res.send("0");
+	}
+	else {
+		tracker.getRef(getClientAddress(req),function(ref,cat) {
+			if (ref && cat) {
+				var visitor= ua(GA_ID);
+				visitor.event(cat, "Downloaded" ,ref,function(err) {
+					console.log("err=" + err);
+				}).send();
+				res.send("0");
+			}
+			else {
+				res.send("1");
+			}
 
-	},function() {
-		console.log("Error looking for tracker user");
-	});
+		},function() {
+			console.log("Error looking for tracker user");
+		});
+	}
+	
 
 
 });
@@ -150,7 +159,7 @@ app.get('/link', function (req,res) {
 		});
 	}
 	var redUrl = req.query.u;
-	if (redUrl==null) redUrl = "https://play.google.com/store/apps/details?id=com.gilapps.forexblackbox";
+	if (redUrl==null) redUrl = "https://play.google.com/store/apps/details?id=com.gilapps.forexblackbox&referrer={ref:" + req.query.ref + ",cat:" + req.query.cat + "}";
 	res.redirect(redUrl);
 });
 
@@ -195,7 +204,7 @@ app.post('/validateNumber', function(req, res) {
 });
 
 app.post('/register', function(req, res) {
-	tracker.getRef(getClientAddress(req),function(ref,cat) {
+	var registerFunc = function(ref,cat) {
 
 		var country = e164.lookup(req.body.number);// ip2cc.lookUp(getClientAddress(req));
 		if (country==null) country=ip2cc.lookUp(getClientAddress(req));
@@ -218,10 +227,17 @@ app.post('/register', function(req, res) {
 
 		});
 
-	},function() {
-		console.log("Error looking for tracker user");
-		res.send("88");
-	});
+	};
+	if (req.body.cat && req.body.ref) { 
+		registerFunc(req.body.ref,req.body.cat);
+	}
+	else {
+		tracker.getRef(getClientAddress(req),registerFunc,function() {
+			console.log("Error looking for tracker user");
+			res.send("88");
+		});
+	}
+	
 
 
 
