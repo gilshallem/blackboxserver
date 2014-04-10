@@ -11,7 +11,7 @@ exports.canShare = function(shareId,callback) {
 		else {
 			if (share) {
 				var timeFromLastShare = new Date().getTime() - share.time;
-				var minTimeBtweenShares = MIN_DAYS_BETWEEN_SHARES*86400000;
+				var minTimeBtweenShares = MIN_DAYS_BETWEEN_SHARES*8640000;
 				if (timeFromLastShare>minTimeBtweenShares) {
 					callback(0);
 				}
