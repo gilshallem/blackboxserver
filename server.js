@@ -7,6 +7,8 @@ var fruefx = require('./external_apis/true_fx');
 var models = require ("./models") // TODO: remove
 var phoneValidation = require('./registration/phone_validation');
 var registration = require('./registration/registration');
+var cupons = require('./features/cupons');
+var shares = require('./features/shares');
 var keepAlive = require('./keep_alive');
 var statistics = require('./statistics');
 var ip2cc = require('ip2cc');
@@ -16,6 +18,8 @@ var tracker  = require ("./tracker");
 var e164 = require('e164');
 
 var app = express();
+
+app.use(express.static(__dirname + '/public'));
 
 app.use(express.json());       // to support JSON-encoded bodies
 app.use(express.urlencoded()); // to support URL-encoded bodies
@@ -161,6 +165,75 @@ app.get('/link', function (req,res) {
 	var redUrl = req.query.u;
 	if (redUrl==null) redUrl = "https://play.google.com/store/apps/details?id=com.gilapps.forexblackbox&referrer={ref:" + req.query.ref + ",cat:" + req.query.cat + "}";
 	res.redirect(redUrl);
+});
+
+
+app.post('/canShare',function(req,res) {
+	shares.canShare(req.body.shareId,function(timeToNextShare) {
+		res.send(timeToNextShare+"");
+	});
+});
+
+app.post('/onShared',function(req,res) {
+	shares.onShared(req.body.shareId,function(statusCode) {
+		res.send(statusCode+"");
+	});
+});
+
+app.post('/createCupon', function(req,res) {
+	if (req.body.pass=="gil113322") { 
+		var expiry =new Date( req.body.expiry).getTime();
+		cupons.createCupon(expiry,req.body.duration,function(code,err) {
+			if (err) {
+				res.send("Error: " + err);
+			}
+			else {
+				res.send("Cupon Created - Code: " + code);
+			}
+		});
+		
+	}
+	
+});
+
+app.post('/useCupon', function(req,res) {
+	cupons.useCupon(req.body.account,req.body.number,req.body.code,function(statusCode) {
+		res.send(statusCode+"");
+	});
+});
+
+
+
+app.all('/getCupons', function(req, res) {
+	//if (req.body.pass=="gil113322") { 
+		models.cupons.find().exec(function(err, result) { 
+			if (!err) {
+				var html = "<html><head></head><body><table border='1' width='100%'>";
+				html = html + "<tr><td>Account</td><td>Number</td><td>Code</td><td>Activation Time</td><td>Duration</td><td>Expiry</td></tr>"
+				var cupon;
+				for (var i = 0; i < result.length; i++) {
+					cupon = result[i];
+					var expiryTime = new Date(cupon.expiryTime).toISOString().replace(/T/, ' ').replace(/\..+/, '');
+					
+					var activationTime;
+					if (cupon.activationTime) activationTime= new Date(cupon.activationTime).toISOString().replace(/T/, ' ').replace(/\..+/, '');
+					html = html + "<tr>";
+					html = html + "<td>" + cupon.account + "</td>";
+					html = html + "<td>" + cupon.number + "</td>";
+					html = html + "<td>" + cupon.code + "</td>";
+					html = html + "<td>" + activationTime + "</td>";
+					html = html + "<td>" + cupon.durationDays + "</td>";
+					html = html + "<td>" + expiryTime + "</td>";
+					html = html + "</tr>";
+				}
+				html = html + "</table></body></html>"
+				res.send(html);
+			} else {
+				console.log(err);
+				res.send(err);
+			};
+		}); 
+	//} // pass check end
 });
 
 app.post('/getLeads', function(req, res) {

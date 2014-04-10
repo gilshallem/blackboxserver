@@ -29,6 +29,20 @@ exports.leads = mongoose.model('leads',new mongoose.Schema({
 	timestamp: Number
 },{ autoIndex: false }));
 
+exports.cupons = mongoose.model('cupons',new mongoose.Schema({
+	code: String,
+	number: String,
+	account: String, 
+	expiryTime: Number,
+	activationTime: Number,
+	durationDays: Number,
+},{ autoIndex: false }));
+
+exports.shares = mongoose.model('shares',new mongoose.Schema({
+	id: String,
+	time: Number
+},{ autoIndex: false }));
+
 exports.tracker = mongoose.model('tracker',new mongoose.Schema({
 	ip: String,
 	refferal_category: String,
