@@ -180,7 +180,7 @@ app.post('/onShared',function(req,res) {
 	});
 });
 app.all('/getShares', function(req, res) {
-	//if (req.body.pass=="gil113322") { 
+	if (req.body.pass=="gil113322") { 
 		models.shares.find().exec(function(err, result) { 
 			if (!err) {
 				var html = "<html><head></head><body><table border='1' width='100%'>";
@@ -200,7 +200,7 @@ app.all('/getShares', function(req, res) {
 				res.send(err);
 			};
 		}); 
-	//} // pass check end
+	} // pass check end
 });
 
 app.post('/createCupon', function(req,res) {
@@ -228,7 +228,7 @@ app.post('/useCupon', function(req,res) {
 
 
 app.all('/getCupons', function(req, res) {
-	//if (req.body.pass=="gil113322") { 
+	if (req.body.pass=="gil113322") { 
 		models.cupons.find().exec(function(err, result) { 
 			if (!err) {
 				var html = "<html><head></head><body><table border='1' width='100%'>";
@@ -256,7 +256,7 @@ app.all('/getCupons', function(req, res) {
 				res.send(err);
 			};
 		}); 
-	//} // pass check end
+	} // pass check end
 });
 
 app.post('/getLeads', function(req, res) {
