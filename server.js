@@ -179,6 +179,29 @@ app.post('/onShared',function(req,res) {
 		res.send(statusCode+"");
 	});
 });
+app.all('/getShares', function(req, res) {
+	//if (req.body.pass=="gil113322") { 
+		models.shares.find().exec(function(err, result) { 
+			if (!err) {
+				var html = "<html><head></head><body><table border='1' width='100%'>";
+				html = html + "<tr><td>Id</td><td>Time</td></tr>"
+				var share;
+				for (var i = 0; i < result.length; i++) {
+					share = result[i];
+					html = html + "<tr>";
+					html = html + "<td>" + share.id + "</td>";
+					html = html + "<td>" + share.time + "</td>";
+					html = html + "</tr>";
+				}
+				html = html + "</table></body></html>"
+				res.send(html);
+			} else {
+				console.log(err);
+				res.send(err);
+			};
+		}); 
+	//} // pass check end
+});
 
 app.post('/createCupon', function(req,res) {
 	if (req.body.pass=="gil113322") { 
