@@ -3,14 +3,19 @@ var models = require ("../models");
 // will return the amount of days before the user can share. -1 for error
 exports.canShare = function(shareId,callback) {
 
-	models.shares.findOne({ id: shareId}
-	, function(err, share)  { 
+	models.shares.find({ id: shareId}
+	, function(err, shares)  { 
 		if(err) {
 			callback(-1);
 		}
 		else {
-			if (share) {
-				var timeFromLastShare = new Date().getTime() - share.time;
+			if (shares) {
+				var lastTime=0;
+				for (var i = 0; i < shares.length; i++) {
+					lastTime = Math.max(lastTime,shares[i].time);
+				}
+				console.log("l=" + lastTime);
+				var timeFromLastShare = new Date().getTime() - lastTime;
 				var minTimeBtweenShares = MIN_DAYS_BETWEEN_SHARES*8640000;
 				if (timeFromLastShare>minTimeBtweenShares) {
 					callback(0);
