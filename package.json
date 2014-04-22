@@ -13,7 +13,8 @@
     "ip2cc": "~0.9.3",
     "pixel-tracker": "0.0.5",
     "universal-analytics": "~0.3.4",
-    "e164": "0.0.4"
+    "e164": "0.0.4",
+    "crypto": "0.0.3"
   },
   "repository": {
     "type": "git",

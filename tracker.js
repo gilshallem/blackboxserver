@@ -1,6 +1,7 @@
 var IP_KEEP_MINUTES = 60;
 var models = require ("./models");
-
+var crypto = require ("crypto");
+	
 exports.registerUser = function(ip,refCategory,ref,shouldOveride,callback,err) {
 	findUser(ip,function(user) {
 		if (user==null) {
