@@ -1,4 +1,5 @@
 var vatiger = require("../external_apis/vatiger");
+var blackboxcrm = require("../external_apis/blackboxcrm");
 var phoneValidation = require('../registration/phone_validation');
 var models = require ("../models");
 
@@ -11,6 +12,7 @@ exports.register = function(fname,lname,email,country,language,refCat,ref,number
 					callback(0);
 				}
 				else {
+					blackboxcrm.addLead(fname,lname,email,country,number,language,refCat,ref,callback);
 					vatiger.addLead(fname,lname,email,country,number,language,refCat,ref,function(status,err) {
 						// add lead to the db
 						models.leads.create({	
@@ -26,10 +28,10 @@ exports.register = function(fname,lname,email,country,language,refCat,ref,number
 							timestamp: new Date().getTime()
 						},function(err) {
 							if (err && status!=0) {
-								callback(-1,err);
+								//callback(-1,err);
 							}
 							else {
-								callback(0);
+								//callback(0);
 							}
 
 						});

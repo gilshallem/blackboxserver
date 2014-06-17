@@ -16,6 +16,8 @@ var pixelTracker= require('pixel-tracker')
 var ua = require("universal-analytics");
 var tracker  = require ("./tracker");
 var e164 = require('e164');
+var country_lookup = require('country-data').lookup;
+var blackboxcrm = require("./external_apis/blackboxcrm");
 
 var app = express();
 
@@ -167,6 +169,14 @@ app.get('/link', function (req,res) {
 	res.redirect(redUrl);
 });
 
+app.post('/executeSignal',function(req,res) {
+	if (req.body.number) {
+		blackboxcrm.sendExecuted(req.body.number,function(statusCode) {
+			res.send(statusCode+"");
+		})
+	}
+	
+});
 
 app.post('/canShare',function(req,res) {
 	shares.canShare(req.body.shareId,function(timeToNextShare) {
@@ -305,6 +315,22 @@ app.post('/register', function(req, res) {
 		var country = e164.lookup(req.body.number);// ip2cc.lookUp(getClientAddress(req));
 		if (country==null) country=ip2cc.lookUp(getClientAddress(req));
 		if (country==null) country=req.body.country;
+		//Convert to code
+		console.log(country);
+		if (country && country.length>2) {
+			var countryData = country_lookup.countries({name: country});
+			if (countryData && countryData.length>0) {
+				if (countryData[0].alpha2) {
+					country = countryData[0].alpha2;
+				} 
+				else {
+					if (countryData[0].alpha3) {
+						country = countryData[0].alpha3;
+					}
+				}
+			}
+			
+		}
 		registration.register(req.body.fname,req.body.lname,req.body.email,country,req.body.language,cat,ref,req.body.number,req.body.code,function(status,err) {
 			res.send(""+status);
 			if (err) {
