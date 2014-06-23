@@ -178,6 +178,15 @@ app.post('/executeSignal',function(req,res) {
 	
 });
 
+app.post('/feedBroker',function(req,res) {
+	if (req.body.number && req.body.contacted && req.body.account && req.body.executed && req.body.rating && req.body.comments) {
+		blackboxcrm.sendBrokerFeed(req.body.number,req.body.contacted , req.body.account , req.body.executed , req.body.rating , req.body.comments,function(statusCode) {
+			res.send(statusCode+"");
+		})
+	}
+	
+});
+
 app.post('/canShare',function(req,res) {
 	shares.canShare(req.body.shareId,function(timeToNextShare) {
 		res.send(timeToNextShare+"");

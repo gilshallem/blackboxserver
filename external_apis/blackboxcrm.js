@@ -23,6 +23,26 @@ exports.addLead = function(fname,lname,email,country,phone,language,refCat,ref,c
 	});
 };
 
+exports.sendBrokerFeed = function(number,contacted , account , executed , rating , comments,callback) {
+	needle.post(ACTION_URL, {
+		action:"upsert",
+		model:"broker_feed",
+		"key:number:phone":number,
+		"field:bool:contacted":contacted,
+		"field:bool:account":account,
+		"field:bool:executed":executed,
+		"field:float:rating":rating,
+		"field:text:comments":comments
+	}, function(err, resp, body) {
+		if (err || resp.statusCode!=200) {
+			callback(-1,err,phone);
+		}
+		else {
+			callback(0,null,phone);
+		}
+	});
+};
+
 exports.sendExecuted = function (phone,callback)  {
 	needle.post(ACTION_URL, {
 		action:"upsert",
