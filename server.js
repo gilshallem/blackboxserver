@@ -175,6 +175,9 @@ app.post('/executeSignal',function(req,res) {
 			res.send(statusCode+"");
 		})
 	}
+	else {
+		res.send(-1);
+	}
 	
 });
 
@@ -183,6 +186,9 @@ app.post('/feedBroker',function(req,res) {
 		blackboxcrm.sendBrokerFeed(req.body.number,req.body.contacted , req.body.account , req.body.executed , req.body.rating , req.body.comments,function(statusCode) {
 			res.send(statusCode+"");
 		})
+	}
+	else {
+		res.send(-1);
 	}
 	
 });
