@@ -182,7 +182,7 @@ app.post('/executeSignal',function(req,res) {
 });
 
 app.post('/feedBroker',function(req,res) {
-	if (req.body.number && req.body.contacted && req.body.account && req.body.executed && req.body.rating && req.body.comments) {
+	if (req.body.number!=null && req.body.contacted!=null && req.body.account!=null && req.body.executed!=null && req.body.rating!=null && req.body.comments!=null) {
 		blackboxcrm.sendBrokerFeed(req.body.number,req.body.contacted , req.body.account , req.body.executed , req.body.rating , req.body.comments,function(statusCode) {
 			res.send(statusCode+"");
 		})
