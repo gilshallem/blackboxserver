@@ -1,5 +1,5 @@
 var ACTION_URL = "http://blackboxcrm.herokuapp.com/api";
-
+ACTION_URL = "http://127.0.0.1:3000/api";
 var needle = require('needle');
 exports.addLead = function(fname,lname,email,country,phone,language,refCat,ref,callback) {
 	needle.post(ACTION_URL, {
@@ -35,10 +35,10 @@ exports.sendBrokerFeed = function(number,contacted , account , executed , rating
 		"field:text:comments":comments
 	}, function(err, resp, body) {
 		if (err || resp.statusCode!=200) {
-			callback(-1,err,phone);
+			callback(-1,err,number);
 		}
 		else {
-			callback(0,null,phone);
+			callback(0,null,number);
 		}
 	});
 };
