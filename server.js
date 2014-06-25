@@ -195,13 +195,13 @@ app.post('/feedBroker',function(req,res) {
 });
 
 app.post('/canShare',function(req,res) {
-	shares.canShare(req.body.shareId,function(timeToNextShare) {
+	shares.canShare(req.body.network,req.body.shareId,req.body.action,function(timeToNextShare) {
 		res.send(timeToNextShare+"");
 	});
 });
 
 app.post('/onShared',function(req,res) {
-	shares.onShared(req.body.shareId,function(statusCode) {
+	shares.onShared(req.body.network,req.body.shareId,req.body.action,function(statusCode) {
 		res.send(statusCode+"");
 	});
 });
