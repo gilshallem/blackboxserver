@@ -3,7 +3,7 @@ var blackboxcrm = require("../external_apis/blackboxcrm");
 var phoneValidation = require('../registration/phone_validation');
 var models = require ("../models");
 
-exports.register = function(fname,lname,email,country,language,refCat,ref,number,code,callback) {
+exports.register = function(ip,fname,lname,email,country,language,refCat,ref,number,countryCode,code,callback) {
 	phoneValidation.validatePhone(number,code,function(status,err) {
 		// if phone validated
 		if (status==0) {
@@ -12,33 +12,36 @@ exports.register = function(fname,lname,email,country,language,refCat,ref,number
 					callback(0);
 				}
 				else {
-					blackboxcrm.addLead(fname,lname,email,country,number,language,refCat,ref,callback);
-					vatiger.addLead(fname,lname,email,country,number,language,refCat,ref,function(status,err) {
-						// add lead to the db
-						models.leads.create({	
-							firstName: fname,
-							lastName:  lname,
-							email:  email,
-							country:  country,
-							phone:  number,
-							language:  language,
-							refCat:  refCat,
-							ref:  ref,
-							sentToCRM: status==0,
-							timestamp: new Date().getTime()
-						},function(err) {
-							if (err && status!=0) {
-								//callback(-1,err);
-							}
-							else {
-								//callback(0);
-							}
+					// add lead to the db
+					/*models.leads.create({	
+						firstName: fname,
+						lastName:  lname,
+						email:  email,
+						country:  country,
+						phone:  number,
+						language:  language,
+						refCat:  refCat,
+						ref:  ref,
+						sentToCRM: false,
+						sentToCRM2: false,
+						timestamp: new Date().getTime()
+					},function(err) {
+						
 
-						});
-
-
-
+					});*/
+					blackboxcrm.addLead(ip,fname,lname,email,country,number,countryCode,language,refCat,ref,function(status,err) {
+						if (status==0) {
+							//updateLead(number,"sentToCRM2",true);
+						}
+						callback(status,err);
 					});
+					vatiger.addLead(fname,lname,email,country,number,language,refCat,ref,function(status,err) {
+						if (status==0) {
+							//updateLead(number,"sentToCRM",true);
+						}
+					});
+					
+					
 				}
 			});
 
@@ -49,6 +52,23 @@ exports.register = function(fname,lname,email,country,language,refCat,ref,number
 	});
 
 };
+
+function updateLead(phone,field,value) {
+	models.leads.findOne({phone: phone}, function(err, lead) {
+	    if(!err && lead) {
+	        lead[field] = value;
+	        lead.save(function(err) {
+	            if(!err) {
+	               // console.log("lead saVED");
+	            }
+	            else {
+	                console.log("Error: could not save lead " + lead.phone);
+	            }
+	        });
+	        
+	    }
+	});
+}
 
 function isAllreadyRegistered(phone,firstName,lastName,callback) {
 	var now = new Date().getTime();

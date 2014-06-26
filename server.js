@@ -19,6 +19,7 @@ var e164 = require('e164');
 var country_lookup = require('country-data').lookup;
 var blackboxcrm = require("./external_apis/blackboxcrm");
 
+
 var app = express();
 
 app.use(express.static(__dirname + '/public'));
@@ -88,8 +89,8 @@ var cronShrinkData =  require('./cron_jobs/shrink_data');
 cronShrinkData.start();
 
 //send pending leads
-var cronSendLeads =  require('./cron_jobs/send_leads');
-cronSendLeads.start();
+//var cronSendLeads =  require('./cron_jobs/send_leads');
+//cronSendLeads.start();
 
 //connect to db
 var uristring =
@@ -141,6 +142,14 @@ app.post('/openApp', function(req, res) {
 	
 
 
+});
+app.all('/test', function (req,res) {
+	console.log("ip=" + getClientAddress(req))
+	console.log("body:");
+	console.log(req.body);
+	console.log("query:");
+	console.log(req.query);
+	res.send("ok");
 });
 
 app.all('/pixel.gif', pixelTracker.middleware);
@@ -195,13 +204,13 @@ app.post('/feedBroker',function(req,res) {
 });
 
 app.post('/canShare',function(req,res) {
-	shares.canShare(req.body.network,req.body.shareId,req.body.action,function(timeToNextShare) {
+	shares.canShare(req.body.phone,req.body.network,req.body.shareId,req.body.action,function(timeToNextShare) {
 		res.send(timeToNextShare+"");
 	});
 });
 
 app.post('/onShared',function(req,res) {
-	shares.onShared(req.body.network,req.body.shareId,req.body.action,function(statusCode) {
+	shares.onShared(req.body.phone,req.body.network,req.body.shareId,req.body.action,function(statusCode) {
 		res.send(statusCode+"");
 	});
 });
@@ -327,9 +336,9 @@ app.post('/validateNumber', function(req, res) {
 
 app.post('/register', function(req, res) {
 	var registerFunc = function(ref,cat) {
-
+		var ip = getClientAddress(req);
 		var country = e164.lookup(req.body.number);// ip2cc.lookUp(getClientAddress(req));
-		if (country==null) country=ip2cc.lookUp(getClientAddress(req));
+		if (country==null) country=ip2cc.lookUp(ip);
 		if (country==null) country=req.body.country;
 		//Convert to code
 		console.log(country);
@@ -347,7 +356,7 @@ app.post('/register', function(req, res) {
 			}
 			
 		}
-		registration.register(req.body.fname,req.body.lname,req.body.email,country,req.body.language,cat,ref,req.body.number,req.body.code,function(status,err) {
+		registration.register(ip,req.body.fname,req.body.lname,req.body.email,country,req.body.language,cat,ref,req.body.number,req.body.country_code,req.body.code,function(status,err) {
 			res.send(""+status);
 			if (err) {
 				console.log("Error /register returned " +status +":" + err);

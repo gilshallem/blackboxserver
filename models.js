@@ -26,6 +26,7 @@ exports.leads = mongoose.model('leads',new mongoose.Schema({
 	refCat:  String,
 	ref:  String,
 	sentToCRM: Boolean,
+	sentToCRM2: Boolean,
 	timestamp: Number
 },{ autoIndex: false }));
 
@@ -40,6 +41,8 @@ exports.cupons = mongoose.model('cupons',new mongoose.Schema({
 
 exports.shares = mongoose.model('shares',new mongoose.Schema({
 	id: String,
+	network: String,
+	action: String,
 	time: Number
 },{ autoIndex: false }));
 

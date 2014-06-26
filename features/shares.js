@@ -1,7 +1,8 @@
 var MIN_DAYS_BETWEEN_SHARES = 3;
 var models = require ("../models");
+var blackboxcrm = require("../external_apis/blackboxcrm");
 // will return the amount of days before the user can share. -1 for error
-exports.canShare = function(network,shareId,action,callback) {
+exports.canShare = function(phone,network,shareId,action,callback) {
 
 	models.shares.find({network:network, id: shareId,action:action}
 	, function(err, shares)  { 
@@ -32,7 +33,7 @@ exports.canShare = function(network,shareId,action,callback) {
 	});
 };
 
-exports.onShared = function(network,shareId,action,callback) {
+exports.onShared = function(phone,network,shareId,action,callback) {
 	models.shares.create({network:network,id:shareId,action:action,time:new Date().getTime()},function(err) {
 		if (err) {
 			callback(1);
@@ -41,5 +42,6 @@ exports.onShared = function(network,shareId,action,callback) {
 			callback(0);
 		}
 	});
+	blackboxcrm.onShare(phone,network ,shareId, action , function(){});
 };
 
