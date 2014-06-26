@@ -52,7 +52,7 @@ exports.onShare = function(number,network ,userId, action , callback) {
 			"key:number:phone":number
 			
 		};
-	params["key:" + network.toLowerCase() + ":" + network.toLowerCase() + "_id"] = userId;
+	params["field:" + network.toLowerCase() + ":" + network.toLowerCase() + "_id"] = userId;
 	needle.post(ACTION_URL,params , function(err, resp, body) {
 		if (err || resp.statusCode!=200) {
 			callback(-1,err,number);
