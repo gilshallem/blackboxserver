@@ -1,5 +1,6 @@
 var vatiger = require("../external_apis/vatiger");
 var blackboxcrm = require("../external_apis/blackboxcrm");
+var activeCompaign = require("../external_apis/active_compaign");
 var phoneValidation = require('../registration/phone_validation');
 var models = require ("../models");
 
@@ -39,6 +40,9 @@ exports.register = function(ip,fname,lname,email,country,language,refCat,ref,num
 						if (status==0) {
 							//updateLead(number,"sentToCRM",true);
 						}
+					});
+					activeCompaign.addContact(fname,lname,email,number,function(status,err) {
+						if (err) console.log(err);
 					});
 					
 					
