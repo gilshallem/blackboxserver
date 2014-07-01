@@ -20,7 +20,6 @@ var country_lookup = require('country-data').lookup;
 var blackboxcrm = require("./external_apis/blackboxcrm");
 
 
-
 var app = express();
 
 app.use(express.static(__dirname + '/public'));
@@ -145,12 +144,7 @@ app.post('/openApp', function(req, res) {
 
 });
 app.all('/test', function (req,res) {
-	console.log("ip=" + getClientAddress(req))
-	console.log("body:");
-	console.log(req.body);
-	console.log("query:");
-	console.log(req.query);
-	res.send("ok");
+	
 });
 
 app.all('/pixel.gif', pixelTracker.middleware);
