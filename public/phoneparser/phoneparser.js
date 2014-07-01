@@ -1,4 +1,4 @@
-function parsePhone(phoneNumber, countryCode) {
+function parsePhone(phoneNumber) {
 
 	try {
 	
