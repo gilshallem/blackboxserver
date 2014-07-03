@@ -5,14 +5,14 @@ exports.addLead = function(ip,fname,lname,email,country,phone,countryCode,langua
 	needle.post(ACTION_URL, {
 		action:"upsert",
 		model:"leads",
-		"key:number:phone":phone,
+		"key:number:phone":phone.trim(),
 		"field:text:countryCode":countryCode,
-		"field:text:ip":ip,
-		"field:text:fname":fname,
-		"field:text:lname":lname,
-		"field:text:email":email,
-		"field:options:country":country,
-		"field:options:Language":language,
+		"field:text:ip":ip.trim(),
+		"field:text:fname":fname.trim(),
+		"field:text:lname":lname.trim(),
+		"field:text:email":email.trim(),
+		"field:options:country":country.trim(),
+		"field:options:Language":language.trim(),
 		"field:options:Refferal_Category" : refCat,
 		"field:options:Refferal" : ref
 	}, function(err, resp, body) {
