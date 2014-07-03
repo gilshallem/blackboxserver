@@ -1,6 +1,6 @@
 var SMS_SERVICE_URL =	"https://rest.nexmo.com/sms/json";
-var API_SECRET = "ce4cc46e";
-var API_KEY = "f6d593ee";
+var API_SECRET = "b93cf39f";
+var API_KEY = "a99f2d5e";
 
 var needle = require('needle');
 
