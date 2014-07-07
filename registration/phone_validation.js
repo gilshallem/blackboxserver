@@ -3,6 +3,8 @@ var SENDING_COOLDOWN_MINUTES = 15;
 var NUMBER_OF_TRYS = 5;
 
 var SMS_FROM = "BlackBox";
+var SMS_FROM_US = "12402240006";
+
 var SMS_TEXT = "Welcome to ForexBlackBox. Your SMS code is: ";
 var CODE_LENGTH = 4;
 
@@ -65,7 +67,8 @@ exports.sendSMS = function(number,ip,callback) {
 				callback(ERROR_TO_MANY_TRYES);
 			}
 			else {
-				nexmo.sendSMS(SMS_FROM,number,SMS_TEXT + code,function (status,err) {
+				var from = number.indexOf("1")==0 ? SMS_FROM_US : SMS_FROM;
+				nexmo.sendSMS(from,number,SMS_TEXT + code,function (status,err) {
 					if (status==0) {
 						models.phoneValidate.create({number:number,code:code,ip:ip,timestamp:now},function(err) {
 							if (err) {
