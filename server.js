@@ -329,7 +329,7 @@ app.post('/validateNumber', function(req, res) {
 			console.log("Error validateNumber returned " +status +":" + err);
 		}
 		//If its an error from nexmo
-		if (status>0) {
+		if (status>0 && status!=6) {
 			blackboxcrm.notify("SMS Verification Error","Faild to send SMS to client","Number: " + req.body.number + "<br />Error number: " + status + "<br />Error message: " + err,"warning",true,function(){});
 		}
 	});
@@ -426,14 +426,7 @@ app.post('/getStatistics', function(req, res) {
 	}
 });
 
-
-
-
-
-
 var port = Number(process.env.PORT || 4000);
-
-
 
 app.listen(port, function() {
 	console.log("Listening on " + port);
