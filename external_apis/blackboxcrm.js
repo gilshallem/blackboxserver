@@ -1,6 +1,26 @@
 var ACTION_URL = "http://blackboxcrm.herokuapp.com/api";
 //ACTION_URL = "http://127.0.0.1:3000/api";
 var needle = require('needle');
+
+
+exports.notify = function (title,description,data,type,notify,callback) {
+	needle.post(ACTION_URL, {
+		action:"notify",
+		"title":title,
+		"description":description,
+		"data":data,
+		"type":type,
+		"notify":notify
+	}, function(err, resp, body) {
+		if (err || resp.statusCode!=200) {
+			callback(-1,err,phone);
+		}
+		else {
+			callback(0,null,phone);
+		}
+	});
+}
+
 exports.addLead = function(ip,fname,lname,email,country,phone,countryCode,language,refCat,ref,callback) {
 	needle.post(ACTION_URL, {
 		action:"upsert",

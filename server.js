@@ -325,7 +325,12 @@ app.post('/getLeads', function(req, res) {
 app.post('/validateNumber', function(req, res) {
 	phoneValidation.sendSMS(req.body.number,getClientAddress(req),function(status,err) {
 		res.send(""+status);
-		if (err) console.log("Error validateNumber returned " +status +":" + err);
+		if (err) {
+			console.log("Error validateNumber returned " +status +":" + err);
+		}
+		if (status>0) {
+			blackboxcrm.notify("SMS Verification Error","Faild to send SMS to client","Number: " + req.body.number + "<br />Error number: " + status + "<br />Error message: " + err,type,notify,callback)
+		}
 	});
 });
 
