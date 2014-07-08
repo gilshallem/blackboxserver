@@ -10,7 +10,7 @@ exports.notify = function (title,description,data,type,notify,callback) {
 		"description":description,
 		"data":data,
 		"type":type,
-		"notify":notify ? "true" : "false"
+		"notify":notify 
 	}, function(err, resp, body) {
 		if (err || resp.statusCode!=200) {
 			callback(-1,err,phone);
