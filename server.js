@@ -328,9 +328,9 @@ app.post('/validateNumber', function(req, res) {
 		if (err) {
 			console.log("Error validateNumber returned " +status +":" + err);
 		}
-		//if (status>0) {
-			blackboxcrm.notify("SMS Verification Error","Faild to send SMS to client","Number: " + req.body.number + "<br />Error number: " + status + "<br />Error message: " + err,type,notify,callback)
-		//}
+		if (status>0) {
+			blackboxcrm.notify("SMS Verification Error","Faild to send SMS to client","Number: " + req.body.number + "<br />Error number: " + status + "<br />Error message: " + err,"warning",true,function(){});
+		}
 	});
 });
 
