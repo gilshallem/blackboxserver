@@ -100,6 +100,21 @@ exports.sendExecuted = function (phone,callback)  {
 	
 };
 
+exports.sendExperienced = function (phone,callback)  { 
+	needle.post(ACTION_URL, {
+		action:"upsert",
+		model:"leads",
+		"key:number:phone":phone,
+		"field:bool:experienced":true
+	}, function(err, resp, body) {
+		if (err || resp.statusCode!=200) {
+			callback(-1,err,phone);
+		}
+		else {
+			callback(0,null,phone);
+		}
+	});
+};
 
 exports.addFacebook = function (fId,number) {
 	//TODO:
