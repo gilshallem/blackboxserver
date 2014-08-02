@@ -140,12 +140,12 @@ app.post('/openApp', function(req, res) {
 			console.log("Error looking for tracker user");
 		});
 	}
-	
+
 
 
 });
 app.all('/test', function (req,res) {
-	
+
 });
 
 app.all('/pixel.gif', pixelTracker.middleware);
@@ -176,15 +176,81 @@ app.get('/link', function (req,res) {
 
 app.post('/executeSignal',function(req,res) {
 	if (req.body.number) {
-		blackboxcrm.sendExecuted(req.body.number,function(statusCode) {
-			res.send(statusCode+"");
-		})
+		blackboxcrm.brokermatch(req.body.number,function(broker,err) {
+			if (err || !broker) {
+				res.send("-1");
+				console.log(err);
+			}
+			else {
+				res.send("0");
+			}
+		});
 	}
 	else {
-		res.send(-1);
+		res.send("-1");
 	}
-	
+
 });
+
+app.post('/getBroker',function(req,res) {
+	if (req.body.number) {
+		blackboxcrm.getBroker(req.body.number,function(broker,err) {
+			if (err || !broker) {
+				res.writeHead(400);
+				console.log(err);
+				if (err=="No Broker") {
+					res.write(2+"");
+				}
+				else {
+					res.write(1+"");
+				}
+				
+				res.end();
+			}
+			else {
+				res.send(broker);
+			}
+		});
+	}
+
+	else {
+		res.writeHead(400);
+		res.write("No number");
+		res.end();
+	}
+
+});
+
+app.post('/brokermatch',function(req,res) {
+	if (req.body.number) {
+		blackboxcrm.brokermatch(req.body.number,function(broker,err) {
+			if (err || !broker) {
+				res.writeHead(400);
+				console.log(err);
+				if (err=="No Broker") {
+					res.write(2+"");
+				}
+				else {
+					res.write(1+"");
+				}
+				
+				res.end();
+			}
+			else {
+				res.send(broker);
+			}
+			
+		});
+	}
+	else {
+		res.writeHead(400);
+		res.write("No number");
+		res.end();
+	}
+
+});
+
+
 
 app.post('/experienced',function(req,res) {
 	if (req.body.number) {
@@ -195,7 +261,7 @@ app.post('/experienced',function(req,res) {
 	else {
 		res.send(-1);
 	}
-	
+
 });
 
 app.post('/feedBroker',function(req,res) {
@@ -208,7 +274,7 @@ app.post('/feedBroker',function(req,res) {
 	else {
 		res.send(-1);
 	}
-	
+
 });
 
 app.post('/canShare',function(req,res) {
@@ -257,9 +323,9 @@ app.post('/createCupon', function(req,res) {
 				res.send("Cupon Created - Code: " + code);
 			}
 		});
-		
+
 	}
-	
+
 });
 
 app.post('/useCupon', function(req,res) {
@@ -280,7 +346,7 @@ app.all('/getCupons', function(req, res) {
 				for (var i = 0; i < result.length; i++) {
 					cupon = result[i];
 					var expiryTime = new Date(cupon.expiryTime).toISOString().replace(/T/, ' ').replace(/\..+/, '');
-					
+
 					var activationTime;
 					if (cupon.activationTime) activationTime= new Date(cupon.activationTime).toISOString().replace(/T/, ' ').replace(/\..+/, '');
 					html = html + "<tr>";
@@ -350,7 +416,7 @@ app.post('/validateNumber', function(req, res) {
 			else {
 				blackboxcrm.notify("SMS Verification Error","Faild to send SMS to client","Number: " + req.body.number + "<br />Error number: " + status + "<br />Error message: " + err,"warning",true,function(){});
 			}
-			
+
 		}
 	});
 });
@@ -375,7 +441,7 @@ app.post('/register', function(req, res) {
 					}
 				}
 			}
-			
+
 		}
 		registration.register(ip,req.body.fname,req.body.lname,req.body.email,country,req.body.language,cat,ref,req.body.number,req.body.country_code,req.body.code,function(status,err) {
 			res.send(""+status);
@@ -405,7 +471,7 @@ app.post('/register', function(req, res) {
 			res.send("88");
 		});
 	}
-	
+
 
 
 
@@ -446,7 +512,7 @@ app.post('/getStatistics', function(req, res) {
 	}
 });
 
-var port = Number(process.env.PORT || 4000);
+var port = Number(process.env.PORT || 80);
 
 app.listen(port, function() {
 	console.log("Listening on " + port);

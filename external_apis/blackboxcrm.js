@@ -1,5 +1,5 @@
 var ACTION_URL = "http://blackboxcrm.herokuapp.com/api";
-//ACTION_URL = "http://127.0.0.1:3000/api";
+ACTION_URL = "http://127.0.0.1:3000/api";
 var needle = require('needle');
 
 
@@ -70,8 +70,8 @@ exports.onShare = function(number,network ,userId, action , callback) {
 			action:"upsert",
 			model:"leads",
 			"key:number:phone":number
-			
-		};
+
+	};
 	params["field:" + network.toLowerCase() + ":" + network.toLowerCase() + "_id"] = userId;
 	needle.post(ACTION_URL,params , function(err, resp, body) {
 		if (err || resp.statusCode!=200) {
@@ -83,8 +83,21 @@ exports.onShare = function(number,network ,userId, action , callback) {
 	});
 };
 
-exports.sendExecuted = function (phone,callback)  {
+exports.brokermatch = function (phone,callback)  {
 	needle.post(ACTION_URL, {
+		action:"externalPlugin",
+		plugin:"brokermatch",
+		plugin_action:"brokermatch",
+		phone:phone
+	}, function(err, resp, body) {
+		if (err || resp.statusCode!=200) {
+			callback(null,err ? err : body+"",phone);
+		}
+		else {
+			callback(body,null,phone);
+		}
+	});
+	/*needle.post(ACTION_URL, {
 		action:"upsert",
 		model:"leads",
 		"key:number:phone":phone,
@@ -96,9 +109,26 @@ exports.sendExecuted = function (phone,callback)  {
 		else {
 			callback(0,null,phone);
 		}
-	});
-	
+	});*/
+
 };
+
+exports.getBroker = function (phone,callback)  {
+	needle.post(ACTION_URL, {
+		action:"externalPlugin",
+		plugin:"brokermatch",
+		plugin_action:"getBroker",
+		phone:phone
+	}, function(err, resp, body) {
+		if (err || resp.statusCode!=200) {
+			callback(null,err ? err : body+"",phone);
+		}
+		else {
+			callback(body,null,phone);
+		}
+	});
+};
+
 
 exports.sendExperienced = function (phone,callback)  { 
 	needle.post(ACTION_URL, {
