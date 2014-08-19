@@ -7,7 +7,7 @@ var models = require ("../models");
 exports.register = function(ip,fname,lname,email,country,language,refCat,ref,number,countryCode,code,callback) {
 	phoneValidation.validatePhone(number,code,function(status,err) {
 		// if phone validated
-		if (status==0) {
+		if (status==0 || status == 1) {
 			isAllreadyRegistered(number,fname,lname,function(isPhoneRegistered) {
 				if (isPhoneRegistered) {
 					callback(0);

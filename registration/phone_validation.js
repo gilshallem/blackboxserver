@@ -8,6 +8,7 @@ var SMS_FROM_US = "12402240006";
 var SMS_TEXT = "Welcome to ForexBlackBox. Your SMS code is: ";
 var CODE_LENGTH = 4;
 
+var EXLUDED_COUNTRY = 1;
 var SUCCESS = 0;
 var INVALIDE_CODE = -3;
 var ERROR_SERVER = -1;
@@ -15,12 +16,20 @@ var ERROR_TO_MANY_TRYES = -2;
 
 var models = require ("../models");
 var nexmo = require("../external_apis/nexmo");
+var e164 = require('e164');
+var country_lookup = require('country-data').lookup;
 
+var excludedCounties = [
+                       
+                        ];
 
 
 
 exports.validatePhone = function(number,code,callback) {
-	
+	if (isExcluded(number)) {
+		callback(EXLUDED_COUNTRY);
+		return;
+	}
 	console.log("num=" + number + ",code=" + code);
 	if (code=="8923") {
 		callback(SUCCESS);
@@ -50,6 +59,10 @@ exports.validatePhone = function(number,code,callback) {
 };
 
 exports.sendSMS = function(number,ip,callback) {
+	if (isExcluded(number)) {
+		callback(EXLUDED_COUNTRY);
+		return;
+	}
 	var code =generateRandomCode();
 	var now = new Date().getTime();
 	models.phoneValidate.count({
@@ -102,4 +115,34 @@ function generateRandomCode() {
 
 function getRandom(min,max) {
 	return Math.floor(Math.random()*(max-min+1))+min;
+}
+
+function getCountry(number) {
+	var country = e164.lookup(number);
+
+	if (country && country.length>2) {
+		var countryData = country_lookup.countries({name: country});
+		if (countryData && countryData.length>0) {
+			if (countryData[0].alpha2) {
+				country = countryData[0].alpha2;
+			} 
+			else {
+				if (countryData[0].alpha3) {
+					country = countryData[0].alpha3;
+				}
+			}
+		}
+
+	}
+	return country;
+}
+
+function isExcluded(number) {
+	var country = getCountry(number).toLowerCase().trim();
+	for (var i=0;i<excludedCounties.length;i++) {
+		if (excludedCounties[i].toLowerCase().trim()==country) {
+			return true;
+		}
+	}
+	return false;
 }

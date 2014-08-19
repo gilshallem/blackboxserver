@@ -1,4 +1,5 @@
 var GA_ID = "UA-48596629-2";
+var minVersion = 12;
 
 var express = require("express");
 var logfmt = require("logfmt");
@@ -114,6 +115,11 @@ var getClientAddress = function (req) {
 };
 
 statistics.start();
+
+app.post('/getMinVersion', function(req, res) {
+	res.send("" + minVersion);
+	
+});
 
 app.post('/openApp', function(req, res) {
 	if (req.body.cat && req.body.ref) {
@@ -401,8 +407,35 @@ app.post('/getLeads', function(req, res) {
 	} // pass check end
 });
 
+var getCountry = function(number,ip,defaultCountry) {
+	var country = e164.lookup(number);
+	if (country==null) country=ip2cc.lookUp(ip);
+	if (country==null) country=defaultCountry;
+	//Convert to code
+	console.log(country);
+	if (country && country.length>2) {
+		var countryData = country_lookup.countries({name: country});
+		if (countryData && countryData.length>0) {
+			if (countryData[0].alpha2) {
+				country = countryData[0].alpha2;
+			} 
+			else {
+				if (countryData[0].alpha3) {
+					country = countryData[0].alpha3;
+				}
+			}
+		}
+
+	}
+	return country;
+}
+
+
+
 app.post('/validateNumber', function(req, res) {
-	phoneValidation.sendSMS(req.body.number,getClientAddress(req),function(status,err) {
+	var ip = getClientAddress(req);
+	
+	phoneValidation.sendSMS(req.body.number,ip,function(status,err) {
 		res.send(""+status);
 		if (err) {
 			console.log("Error validateNumber returned " +status +":" + err);
@@ -424,25 +457,7 @@ app.post('/validateNumber', function(req, res) {
 app.post('/register', function(req, res) {
 	var registerFunc = function(ref,cat) {
 		var ip = getClientAddress(req);
-		var country = e164.lookup(req.body.number);// ip2cc.lookUp(getClientAddress(req));
-		if (country==null) country=ip2cc.lookUp(ip);
-		if (country==null) country=req.body.country;
-		//Convert to code
-		console.log(country);
-		if (country && country.length>2) {
-			var countryData = country_lookup.countries({name: country});
-			if (countryData && countryData.length>0) {
-				if (countryData[0].alpha2) {
-					country = countryData[0].alpha2;
-				} 
-				else {
-					if (countryData[0].alpha3) {
-						country = countryData[0].alpha3;
-					}
-				}
-			}
-
-		}
+		var country = getCountry(req.body.number,ip,req.body.country);
 		registration.register(ip,req.body.fname,req.body.lname,req.body.email,country,req.body.language,cat,ref,req.body.number,req.body.country_code,req.body.code,function(status,err) {
 			res.send(""+status);
 			if (err) {
