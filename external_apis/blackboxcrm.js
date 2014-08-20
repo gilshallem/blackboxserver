@@ -32,9 +32,9 @@ exports.addLead = function(ip,fname,lname,email,country,phone,countryCode,langua
 		"field:text:lname":lname.trim(),
 		"field:text:email":email.trim(),
 		"field:options:country":country.trim(),
-		"field:options:Language":language.trim(),
-		"field:options:Refferal_Category" : refCat,
-		"field:options:Refferal" : ref
+		"field:options:language":language.trim(),
+		"field:options:refferal_category" : refCat,
+		"field:options:refferal" : ref
 	}, function(err, resp, body) {
 		if (err || resp.statusCode!=200) {
 			callback(-1,err,phone);
