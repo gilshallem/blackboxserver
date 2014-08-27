@@ -406,13 +406,16 @@ app.post('/getLeads', function(req, res) {
 		}); 
 	} // pass check end
 });
-
+app.post('/getCountry', function(req, res) {
+	res.send(getCountry(req.body.number),"192.123.123.32","test");
+});
 var getCountry = function(number,ip,defaultCountry) {
 	var country = e164.lookup(number);
+	try {
 	if (country==null) country=ip2cc.lookUp(ip);
+	} catch (e) {}
 	if (country==null) country=defaultCountry;
 	//Convert to code
-	console.log(country);
 	if (country && country.length>2) {
 		var countryData = country_lookup.countries({name: country});
 		if (countryData && countryData.length>0) {
@@ -427,6 +430,7 @@ var getCountry = function(number,ip,defaultCountry) {
 		}
 
 	}
+	
 	return country;
 }
 
