@@ -1,5 +1,5 @@
 var GA_ID = "UA-48596629-2";
-var minVersion = 12;
+var minVersion = 13;
 
 var express = require("express");
 var logfmt = require("logfmt");
