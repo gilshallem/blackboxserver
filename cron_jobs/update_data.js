@@ -53,6 +53,11 @@ exports.start = function() {
 
 }
 
+exports.isUnchanged = function(assetName) {
+	if (assets[assetName]==null) return null;
+	return assets[assetName].noChange >= MAX_UNCHANGE_INTERVALS;
+};
+
 exports.getUnchangedAssets = function() {
 	var unchangedAssets=[];
 	for (assetName in assets) {
@@ -61,12 +66,12 @@ exports.getUnchangedAssets = function() {
 		}
 	}
 	return unchangedAssets;
-}
+};
 
 exports.getAssetCount = function() {
 	
 	return Object.keys(assets).length;
-}
+};
 
 
 

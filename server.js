@@ -22,6 +22,7 @@ var blackboxcrm = require("./external_apis/blackboxcrm");
 var nexmo = require('./external_apis/nexmo');
 
 
+
 var app = express();
 
 app.use(express.static(__dirname + '/public'));
@@ -531,10 +532,26 @@ app.post('/getStatistics', function(req, res) {
 	}
 });
 
+
+
 var port = Number(process.env.PORT || 80);
 
 app.listen(port, function() {
 	console.log("Listening on " + port);
 });
+/*
+var app2 = express();
+app2.all('/', function(req, res) {
+	console.log("test");
+	res.send("test");
+});
+app2.listen(9012, function() {
+	console.log("Listening on " + 9999);
+});*/
+
+
+
+
+
 
 //keepAlive.keepAlive(app,'blackboxserver.herokuapp.com',port);

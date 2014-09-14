@@ -1,4 +1,4 @@
-var ACTION_URL = "http://blackboxcrm.herokuapp.com/api";
+var ACTION_URL = "https://blackboxcrm.herokuapp.com/api";
 //ACTION_URL = "http://127.0.0.1:3000/api";
 var needle = require('needle');
 
