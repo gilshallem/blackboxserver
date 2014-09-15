@@ -20,7 +20,9 @@ var e164 = require('e164');
 var country_lookup = require('country-data').lookup;
 
 var excludedCounties = [
-                       
+                       "in",
+                       "id",
+                       "my"
                         ];
 
 
