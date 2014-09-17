@@ -446,7 +446,7 @@ app.post('/validateNumber', function(req, res) {
 			console.log("Error validateNumber returned " +status +":" + err);
 		}
 		//If its an error from nexmo
-		if (status>0 && status!=6) {
+		if (status>0 && status!=6 && status!=1) {
 			var error = nexmo.getResponseDetails(status);
 			if (error) {
 				blackboxcrm.notify("SMS Verification Error","Faild to send SMS to client","Number: " + req.body.number + "<br />Error number: " + status + "<br />Error message: " + error.message + "<br />Description: " + error.description ,"warning",true,function(){});
