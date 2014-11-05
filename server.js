@@ -20,7 +20,7 @@ var e164 = require('e164');
 var country_lookup = require('country-data').lookup;
 var blackboxcrm = require("./external_apis/blackboxcrm");
 var nexmo = require('./external_apis/nexmo');
-
+var activeCompaign = require("../external_apis/active_compaign");
 
 
 var app = express();
@@ -244,10 +244,16 @@ app.post('/brokermatch',function(req,res) {
 				res.end();
 			}
 			else {
+				if (req.body.email) {
+					activeCompaign.sendEvent(req.body.email,"Broker_Matched",broker,function(){});
+				}
+				
 				res.send(broker);
+				
 			}
 			
 		});
+		
 	}
 	else {
 		res.writeHead(400);
