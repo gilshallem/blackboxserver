@@ -41,7 +41,7 @@ exports.register = function(ip,fname,lname,email,country,language,refCat,ref,num
 							//updateLead(number,"sentToCRM",true);
 						}
 					});
-					activeCompaign.addContact(fname,lname,email,number,function(status,err) {
+					activeCompaign.addContact(fname,lname,email,number,country,language,refCat,ref,function(status,err) {
 						if (err) console.log(err);
 					});
 					

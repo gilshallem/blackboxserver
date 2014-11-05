@@ -1,14 +1,15 @@
-var API_URL = "https://walof.api-us1.com/admin/api.php";
-var API_KEY = "4d2ebe10fb5e4592f1740a52f91f4496af059ac408529ac182de526509f7194243df04da";
+var API_URL = "https://george55.api-us1.com";
+var API_KEY = "3654a78b6cc8f22f76d882e4e46b278aa7d9a38370be7a0f223615ea1c0ea539af08942e";
 var API_ACTION_ADD_CONTACT = "contact_add";
+var LIST_NUMBER = 1;
 var EVENT_URL = "https://trackcmp.net/event";
-var ACT_ID = "648874155";
-var EVENT_KEY = "0e4fab9f38e35277e72a0cb58f2844b05aba91b8";
+var ACT_ID = "25011050";
+var EVENT_KEY = "3fe75d2ba9f092d21bcf9de19a5df0317d8f55dc";
 
 
 var needle = require('needle');
 
-exports.addContact =  function(fname,lname,email,phone,callback) {
+exports.addContact =  function(fname,lname,email,phone,country,language,refCat,ref,callback) {
 
 	/*serialize = function(obj) {
 		var str = [];
@@ -27,9 +28,13 @@ exports.addContact =  function(fname,lname,email,phone,callback) {
 			last_name: lname,
 			email: email,
 			phone: phone,
-			"p[3]":3
-	}
-
+			"field[%COUNTRY%,0]":country,
+			"field[%LANGUAGE%,0]":language,
+			"field[%REFERRAL_CATEGORY%,0]":refCat,
+			"field[%REFERRAL%,0]":ref,
+	};
+	
+	data["p["+LIST_NUMBER+"]"] = LIST_NUMBER;
 	needle.post(API_URL ,data, function(err, resp, body) {
 		if (err || resp.statusCode!=200) {
 			callback(-1,err,phone);
