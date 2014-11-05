@@ -1,4 +1,4 @@
-var API_URL = "https://george55.api-us1.com";
+var API_URL = "https://george55.api-us1.com/admin/api.php";
 var API_KEY = "3654a78b6cc8f22f76d882e4e46b278aa7d9a38370be7a0f223615ea1c0ea539af08942e";
 var API_ACTION_ADD_CONTACT = "contact_add";
 var LIST_NUMBER = 1;
@@ -29,12 +29,13 @@ exports.addContact =  function(fname,lname,email,phone,country,language,refCat,r
 			email: email,
 			phone: phone,
 			"field[%COUNTRY%,0]":country,
-			"field[%LANGUAGE%,0]":language,
-			"field[%REFERRAL_CATEGORY%,0]":refCat,
-			"field[%REFERRAL%,0]":ref,
+			"field[%LANGUAGE%,0]":language
 	};
-	
+	if (refCat) data["field[%REFERRAL_CATEGORY%,0]"] = refCat;
+	if (ref) data["field[%REFERRAL%,0]"] = ref;
+
 	data["p["+LIST_NUMBER+"]"] = LIST_NUMBER;
+	
 	needle.post(API_URL ,data, function(err, resp, body) {
 		if (err || resp.statusCode!=200) {
 			callback(-1,err,phone);

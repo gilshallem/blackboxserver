@@ -540,7 +540,7 @@ app.post('/getStatistics', function(req, res) {
 
 
 
-var port = Number(process.env.PORT || 80);
+var port = Number(process.env.PORT || 2000);
 
 app.listen(port, function() {
 	console.log("Listening on " + port);
