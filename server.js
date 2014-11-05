@@ -20,7 +20,7 @@ var e164 = require('e164');
 var country_lookup = require('country-data').lookup;
 var blackboxcrm = require("./external_apis/blackboxcrm");
 var nexmo = require('./external_apis/nexmo');
-var activeCompaign = require("../external_apis/active_compaign");
+var activeCompaign = require("./external_apis/active_compaign");
 
 
 var app = express();

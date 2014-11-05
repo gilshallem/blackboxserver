@@ -50,7 +50,7 @@ exports.addContact =  function(fname,lname,email,phone,country,language,refCat,r
 	});
 }
 
-exports.sendEvent(email,eventName,eventData,callback) {
+exports.sendEvent = function(email,eventName,eventData,callback) {
 	
 	var data = {
 			actid: ACT_ID, 
