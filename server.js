@@ -1,6 +1,9 @@
-var GA_ID = "UA-48596629-2";
-var minVersion = 13;
+var appSettings = {
+		showPlus500:true,
+		minVersion:13
+}
 
+var GA_ID = "UA-48596629-2";
 var express = require("express");
 var logfmt = require("logfmt");
 var mongoose = require ("mongoose");
@@ -117,10 +120,18 @@ var getClientAddress = function (req) {
 
 statistics.start();
 
+
 app.post('/getMinVersion', function(req, res) {
-	res.send("" + minVersion);
+	res.send(appSettings.minVersion+"");
 	
 });
+
+
+app.post('/getSettings', function(req, res) {
+	res.send(appSettings);
+	
+});
+
 
 app.post('/openApp', function(req, res) {
 	if (req.body.cat && req.body.ref) {
