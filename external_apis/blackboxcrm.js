@@ -1,5 +1,5 @@
 var ACTION_URL = "https://blackboxcrm.herokuapp.com/api";
-//ACTION_URL = "http://127.0.0.1:3000/api";
+ACTION_URL = "http://127.0.0.1:3000/api";
 var needle = require('needle');
 
 
@@ -36,6 +36,34 @@ exports.addLead = function(ip,fname,lname,email,country,phone,countryCode,langua
 		"field:options:refferal_category" : refCat,
 		"field:options:refferal" : ref
 	}, function(err, resp, body) {
+		if (err || resp.statusCode!=200) {
+			callback(-1,err,phone);
+		}
+		else {
+			callback(0,null,phone);
+		}
+	});
+};
+
+exports.updateAF = function(phone,compaign,media,agency,id,clickTime,installTime,callback) {
+	var params = {
+		action:"upsert",
+		model:"leads",
+		"key:number:phone":phone.trim(),
+		"field:text:af_id":id.trim(),
+	}
+	if (compaign) 
+		params["field:options:af_compaign"]=compaign.trim();
+	if (media) 
+		params["field:options:af_media"]=media.trim();
+	if (agency) 
+		params["field:options:af_agency"]=agency.trim();
+	if (clickTime) 
+		params["field:Date:af_clickTime"]=clickTime.trim();
+	if (installTime) 
+		params["field:Date:af_installTime"]=installTime.trim();
+		
+	needle.post(ACTION_URL, params, function(err, resp, body) {
 		if (err || resp.statusCode!=200) {
 			callback(-1,err,phone);
 		}

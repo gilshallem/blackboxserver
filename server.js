@@ -476,6 +476,13 @@ app.post('/validateNumber', function(req, res) {
 	});
 });
 
+app.post('/setAppsFlyer', function(req, res) {
+	
+	blackboxcrm.updateAF(req.body.number,req.body.compaign,req.body.media,req.body.agency,req.body.id,req.body.clickTime,req.body.installTime,function(status,err) {
+		res.send(""+status);
+	});
+});
+
 app.post('/register', function(req, res) {
 	var registerFunc = function(ref,cat) {
 		var ip = getClientAddress(req);
