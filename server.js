@@ -1,6 +1,6 @@
 var appSettings = {
 		showPlus500:true,
-		minVersion:13
+		minVersion:16
 }
 
 var GA_ID = "UA-48596629-2";
