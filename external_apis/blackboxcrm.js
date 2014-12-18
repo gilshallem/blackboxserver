@@ -63,7 +63,7 @@ exports.updateAF = function(phone,compaign,media,agency,id,clickTime,installTime
 	if (installTime) 
 		params["field:Date:af_installTime"]=installTime.trim();
 	if (siteId)
-		params["field:Date:af_siteId"]=siteId.trim();
+		params["field:text:af_siteId"]=siteId.trim();
 	needle.post(ACTION_URL, params, function(err, resp, body) {
 		if (err || resp.statusCode!=200) {
 			callback(-1,err,phone);
