@@ -476,9 +476,17 @@ app.post('/validateNumber', function(req, res) {
 	});
 });
 
+
+app.post('/setSubscription', function(req, res) {
+	
+	blackboxcrm.updateSubscription(req.body.number,req.body.orderId,function(status,err) {
+		res.send(""+status);
+	});
+});
+
 app.post('/setAppsFlyer', function(req, res) {
 	
-	blackboxcrm.updateAF(req.body.number,req.body.compaign,req.body.media,req.body.agency,req.body.id,req.body.clickTime,req.body.installTime,req.body.siteId,function(status,err) {
+	blackboxcrm.updateAF(req.body.number,req.body.compaign,req.body.media,req.body.agency,req.body.id,req.body.clickTime,req.body.installTime,req.body.siteId,req.body.fbAdGroup,req.body.fbAdSet,function(status,err) {
 		res.send(""+status);
 	});
 });

@@ -45,7 +45,27 @@ exports.addLead = function(ip,fname,lname,email,country,phone,countryCode,langua
 	});
 };
 
-exports.updateAF = function(phone,compaign,media,agency,id,clickTime,installTime,siteId,callback) {
+
+exports.updateSubscription = function(phone,orderID,callback) {
+	var params = {
+			action:"upsert",
+			model:"leads",
+			"key:number:phone":phone.trim(),
+			"field:bool:is_subscribed":"true",
+			"subscription_order:":orderID.trim()
+		}
+		
+		needle.post(ACTION_URL, params, function(err, resp, body) {
+			if (err || resp.statusCode!=200) {
+				callback(-1,err,phone);
+			}
+			else {
+				callback(0,null,phone);
+			}
+		});
+}
+
+exports.updateAF = function(phone,compaign,media,agency,id,clickTime,installTime,siteId,fbAdGroup,fbAdSet,callback) {
 	var params = {
 		action:"upsert",
 		model:"leads",
@@ -64,6 +84,10 @@ exports.updateAF = function(phone,compaign,media,agency,id,clickTime,installTime
 		params["field:Date:af_installTime"]=installTime.trim();
 	if (siteId)
 		params["field:text:af_siteId"]=siteId.trim();
+	if (fbAdGroup)
+		params["field:text:af_fb_adGroup"]=fbAdGroup.trim();
+	if (fbAdSet)
+		params["field:text:af_fb_adSet"]=fbAdSet.trim();
 	needle.post(ACTION_URL, params, function(err, resp, body) {
 		if (err || resp.statusCode!=200) {
 			callback(-1,err,phone);
