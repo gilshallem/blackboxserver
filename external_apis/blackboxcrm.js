@@ -52,7 +52,7 @@ exports.updateSubscription = function(phone,orderID,callback) {
 			model:"leads",
 			"key:number:phone":phone.trim(),
 			"field:bool:is_subscribed":"true",
-			"subscription_order:":orderID.trim()
+			"field:text:subscription_order:":orderID.trim()
 		}
 		
 		needle.post(ACTION_URL, params, function(err, resp, body) {
