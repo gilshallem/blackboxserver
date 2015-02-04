@@ -7,6 +7,24 @@ exports.ForexHistory = mongoose.model('ForexHistory',new mongoose.Schema({
 
 },{ autoIndex: false }));
 
+exports.CurrencyPairs = mongoose.model('CurrencyPairs',new mongoose.Schema({
+	asset: String,
+	bid: Number,
+	offer: Number,
+	timestamp:  Date
+},{ autoIndex: false }));
+//models.CurrencyPairs.index({ bid: 1, timestamp: -1 });
+
+exports.quotes = mongoose.model('ForexQuotes',new mongoose.Schema({
+	asset: { type: String, index: true},
+	open: Number,
+	close: Number,
+	high: Number,
+	low: Number,
+	interval: { type: Number, index: true},
+	timestamp:  Date // try to make index
+},{ autoIndex: false }));
+
 
 exports.phoneValidate = mongoose.model('phone_validation',new mongoose.Schema({
 	number: String,

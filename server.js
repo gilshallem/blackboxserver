@@ -87,8 +87,16 @@ process.on('uncaughtException', function (err) {
 }); 
 
 //update data
-var cronUpdateData =  require('./cron_jobs/update_data');
+var cronUpdateData_OLD =  require('./cron_jobs/update_data');
+cronUpdateData_OLD.start();
+
+//update data
+var cronUpdateData =  require('./cron_jobs/update_data2');
 cronUpdateData.start();
+
+//check market
+var cronCheckMarket =  require('./cron_jobs/check_market');
+cronCheckMarket.start();
 
 //shrink data
 var cronShrinkData =  require('./cron_jobs/shrink_data');
@@ -479,7 +487,7 @@ app.post('/validateNumber', function(req, res) {
 
 app.post('/setSubscription', function(req, res) {
 	
-	blackboxcrm.updateSubscription(req.body.number,req.body.orderId,function(status,err) {
+	blackboxcrm.updateSubscription(req.body.number,req.body.orderId ? req.body.orderId : req.body.orderID,function(status,err) {
 		res.send(""+status);
 	});
 });
@@ -530,8 +538,33 @@ app.post('/register', function(req, res) {
 
 });
 
+app.post('/getQuotes', function(req, res) {
+	var query = models.quotes.find({ asset:req.body.asset,interval:req.body.interval });
+	if (req.body.from!=null) {
+		query.where('timestamp').gt(req.body.from);
+	}
+	query.exec(function(err, result) { 
+		if (!err) {
+			var quotes = [];
+			for (var i=0;i<result.length;i++) {
+				var q = result[i];
+				quotes.push({
+					timestamp: q.timestamp.getTime(),
+					open: q.open,
+					close: q.close,
+					low: q.low,
+					high: q.high
+				});
+			}
+			res.send(JSON.stringify(quotes));
+		} else {
+			console.log(err);
+			res.send(err);
+		};
+	}); 
+});
 
-
+//dispeached
 app.post('/getHistory', function(req, res) {
 	var query = models.ForexHistory.find({ asset:req.body.asset }).select("timestamp bid");
 	if (req.body.from!=null) {
@@ -548,12 +581,12 @@ app.post('/getHistory', function(req, res) {
 });
 
 app.post('/getTradeable', function(req, res) {
-	res.send(cronUpdateData.getUnchangedAssets());
+	res.send(cronCheckMarket.getUnchangedAssets());
 });
 
 app.post('/getStatistics', function(req, res) {
 	res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
-	var totalTradable = cronUpdateData.getAssetCount() - cronUpdateData.getUnchangedAssets().length;
+	var totalTradable = cronCheckMarket.getAssetCount() - cronCheckMarket.getUnchangedAssets().length;
 	if (totalTradable>0) {
 		var stats=statistics.getStatistics();
 		stats.push(""+totalTradable);

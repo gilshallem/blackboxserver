@@ -17,10 +17,12 @@ var sessionId=null;
 
 exports.getCurrencyUpdates = getUpdates;
 
+exports.getCurrencies = function() {return ALL_CORRENCIES.split(",");};
+
 function getUpdates(onUpdate,onError) {
 	if (sessionId==null) {
 		console.log("Login in into TrueFx");
-		options.path = PATH + "?u=" + USERNAME + "&p=" + PASSWORD + "&q=" + QUALIFIER + "&c=" + ALL_CORRENCIES;
+		options.path = PATH + "?s=n&f=csv&u=" + USERNAME + "&p=" + PASSWORD + "&q=" + QUALIFIER + "&c=" + ALL_CORRENCIES;
 
 
 		http.get(options, function(resp){
@@ -31,7 +33,7 @@ function getUpdates(onUpdate,onError) {
 			resp.on('end', function () {
 				sessionId = outData;
 				sessionId = sessionId.replace(/(\r\n|\n|\r)/gm,"");
-				console.log("Logined into TrueFx");
+				//console.log("Logined into TrueFx sessionID=" + sessionId);
 				getUpdates(onUpdate);
 			});
 
@@ -41,8 +43,8 @@ function getUpdates(onUpdate,onError) {
 		});
 	}
 	else {
-		console.log("Getting data from TrueFx");
-		options.path = PATH + "?f=csv&id=" + sessionId;
+		//console.log("Getting data from TrueFx");
+		options.path = PATH + "?id=" + sessionId ;
 
 		http.get(options, function(resp){
 			var outData="";
@@ -50,7 +52,7 @@ function getUpdates(onUpdate,onError) {
 				outData+=chunk;
 			});
 			resp.on('end', function () {
-				console.log("Got data from TrueFx ");
+				//console.log("Got data from TrueFx ");
 				onUpdate(CSVToArray(outData));
 			});
 		}).on("error", function(e){
