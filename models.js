@@ -22,7 +22,8 @@ exports.quotes = mongoose.model('ForexQuotes',new mongoose.Schema({
 	high: Number,
 	low: Number,
 	interval: { type: Number, index: true},
-	timestamp:  Date // try to make index
+	timestamp:  { type: Date, index: true},
+	firstBid: Number
 },{ autoIndex: false }));
 
 

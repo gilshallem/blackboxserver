@@ -2,7 +2,7 @@ var MAX_FOREX_HISTORY		 				= 200;
 var MAX_PHONE_VALIDATION_HISTORY_MINUTES 	= 30;
 var MAX_TRACKER_MINUTES 					= 60;
 var MAX_LEADS_DAYS		 					= 7;
-
+var MAX_FOREX_HISTORY_MINUTES				= 200;//OLD
 
 var models = require ("../models");
 var cronJob = require('cron').CronJob;
