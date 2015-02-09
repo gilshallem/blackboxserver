@@ -7,12 +7,13 @@ exports.ForexHistory = mongoose.model('ForexHistory',new mongoose.Schema({
 
 },{ autoIndex: false }));
 
+/*
 exports.CurrencyPairs = mongoose.model('CurrencyPairs',new mongoose.Schema({
 	asset: String,
 	bid: Number,
 	offer: Number,
 	timestamp:  Date
-},{ autoIndex: false }));
+},{ autoIndex: false }));*/
 //models.CurrencyPairs.index({ bid: 1, timestamp: -1 });
 
 exports.quotes = mongoose.model('ForexQuotes',new mongoose.Schema({
