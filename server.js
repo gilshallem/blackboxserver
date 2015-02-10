@@ -95,8 +95,8 @@ cronUpdateData_OLD.start();
 //cronUpdateData.start();
 
 //check market
-var cronCheckMarket =  require('./cron_jobs/check_market');
-cronCheckMarket.start();
+//var cronCheckMarket =  require('./cron_jobs/check_market');
+//cronCheckMarket.start();
 
 //shrink data
 var cronShrinkData =  require('./cron_jobs/shrink_data');
@@ -581,12 +581,12 @@ app.post('/getHistory', function(req, res) {
 });
 
 app.post('/getTradeable', function(req, res) {
-	res.send(cronCheckMarket.getUnchangedAssets());
+	res.send(cronUpdateData_OLD.getUnchangedAssets());
 });
 
 app.post('/getStatistics', function(req, res) {
 	res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
-	var totalTradable = cronCheckMarket.getAssetCount() - cronCheckMarket.getUnchangedAssets().length;
+	var totalTradable = cronUpdateData_OLD.getAssetCount() - cronUpdateData_OLD.getUnchangedAssets().length;
 	if (totalTradable>0) {
 		var stats=statistics.getStatistics();
 		stats.push(""+totalTradable);
