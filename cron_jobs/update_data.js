@@ -1,5 +1,5 @@
 var models = require ("../models");
-var fruefx = require('../external_apis/true_fx');
+var fruefx = require('../external_apis/true_fx2');
 var cronJob = require('cron').CronJob;
 
 

@@ -91,8 +91,8 @@ var cronUpdateData_OLD =  require('./cron_jobs/update_data_old');
 cronUpdateData_OLD.start();
 
 //update data
-//var cronUpdateData =  require('./cron_jobs/update_data');
-//cronUpdateData.start();
+var cronUpdateData =  require('./cron_jobs/update_data');
+cronUpdateData.start();
 
 //check market
 //var cronCheckMarket =  require('./cron_jobs/check_market');
