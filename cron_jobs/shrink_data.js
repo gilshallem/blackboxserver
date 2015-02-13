@@ -13,7 +13,7 @@ exports.start = function() {
 		cronTime: '*/10 * * * *',
 		onTick: function() {
 			console.log("shrinking db");
-			shrinkForexData();
+			//shrinkForexData();
 			shrinkForexData_OLD();
 			shrinkPhoneValidation();
 			shrinkTracker();
