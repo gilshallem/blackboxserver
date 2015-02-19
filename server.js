@@ -573,10 +573,14 @@ app.post('/getHistory', function(req, res) {
 	query.exec(function(err, result) { 
 		if (!err) {
 			res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+			res.header('Expires', '-1');
+			res.header('Pragma', 'no-cache');
 			res.send(JSON.stringify(result));
 		} else {
 			console.log(err);
 			res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+			res.header('Expires', '-1');
+			res.header('Pragma', 'no-cache');
 			res.send(err);
 		};
 	}); 
@@ -593,10 +597,14 @@ app.post('/getStatistics', function(req, res) {
 		var stats=statistics.getStatistics();
 		stats.push(""+totalTradable);
 		res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+		res.header('Expires', '-1');
+		res.header('Pragma', 'no-cache');
 		res.send(JSON.stringify(stats));
 	}
 	else {
 		res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+		res.header('Expires', '-1');
+		res.header('Pragma', 'no-cache');
 		res.send(JSON.stringify(["0","0","0"]));
 	}
 });
