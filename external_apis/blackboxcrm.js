@@ -101,7 +101,8 @@ exports.updateAF = function(phone,compaign,media,agency,id,clickTime,installTime
 exports.signalStatistics = function(strategy,asset,signalTime,direction,power,bid,stopLoss,takeProfit,won,avgJump,tpPeriod,slPeriod,potentialSL,potentialTP,min5,min10,min15,max5,max10,max15,callback) {
 	var bidLength = bid.trim().length;
 	
-	var intervalTime = new Date( (now.getTime() - ((now.getMinutes() % 5)*60000) - (now.getSeconds()*1000+now.getMilliseconds())));
+	var now = new Date();
+	var intervalTime = now.getTime() - ((now.getMinutes() % 5)*60000) - (now.getSeconds()*1000+now.getMilliseconds());
 	var id = getHashCode(intervalTime + "" + strategy + asset+direction+power+bid+won);
 	
 	var params = {
