@@ -99,17 +99,18 @@ exports.updateAF = function(phone,compaign,media,agency,id,clickTime,installTime
 };
 
 exports.signalStatistics = function(strategy,asset,signalTime,direction,power,bid,stopLoss,takeProfit,won,avgJump,tpPeriod,slPeriod,potentialSL,potentialTP,min5,min10,min15,max5,max10,max15,callback) {
+	var bidLength = bid.trim().length;
 	var params = {
 		action:"upsert",
 		model:"signals",
 		"field:options:strategy":strategy.trim(),
 		"field:options:asset":asset.trim(),
-		"field:Date:signalTime":signalTime.trim(),
+		"field:date:signalTime":signalTime.trim(),
 		"field:options:direction":direction.trim(),
 		"field:number:power":power.trim(),
 		"field:number:bid":bid.trim(),
-		"field:number:stopLoss":stopLoss.trim(),
-		"field:number:takeProfit":takeProfit.trim(),
+		"field:number:stopLoss":cutString(stopLoss.trim(),bidLength),
+		"field:number:takeProfit":cutString(takeProfit.trim(),bidLength),
 		"field:bool:won":won,
 		"field:number:avgJump":avgJump.trim()
 	}
@@ -118,28 +119,28 @@ exports.signalStatistics = function(strategy,asset,signalTime,direction,power,bi
 	if (slPeriod) 
 		params["field:number:slPeriod"]=slPeriod.trim();
 	if (potentialSL) 
-		params["field:number:potentialSL"]=potentialSL.trim();
+		params["field:number:potentialSL"]=cutString(potentialSL.trim(),bidLength);
 	if (potentialTP) 
-		params["field:number:potentialTP"]=potentialTP.trim();
+		params["field:number:potentialTP"]=cutString(potentialTP.trim(),bidLength);
 	if (min5) 
-		params["field:number:min5"]=min5.trim();
+		params["field:number:min5"]=cutString(min5.trim(),bidLength);
 	if (min10) 
-		params["field:number:min10"]=min10.trim();
+		params["field:number:min10"]=cutString(min10.trim(),bidLength);
 	if (min15) 
-		params["field:number:min15"]=min15.trim();
+		params["field:number:min15"]=cutString(min15.trim(),bidLength);
 	if (max5) 
-		params["field:number:max5"]=max5.trim();
+		params["field:number:max5"]=cutString(max5.trim(),bidLength);
 	if (max10) 
-		params["field:number:max10"]=max10.trim();
+		params["field:number:max10"]=cutString(max10.trim(),bidLength);
 	if (max15) 
-		params["field:number:max15"]=max15.trim();
+		params["field:number:max15"]=cutString(max15.trim(),bidLength);
 	
 	needle.post(ACTION_URL, params, function(err, resp, body) {
 		if (err || resp.statusCode!=200) {
-			callback(-1,err,phone);
+			callback(-1,err);
 		}
 		else {
-			callback(0,null,phone);
+			callback(0,null);
 		}
 	});
 };
@@ -248,3 +249,8 @@ exports.sendExperienced = function (phone,callback)  {
 exports.addFacebook = function (fId,number) {
 	//TODO:
 };
+
+function cutString(str,maxLength) {
+	if (str && str.length>maxLength) return str.substring(0,maxLength);
+	return str;
+}
