@@ -100,9 +100,14 @@ exports.updateAF = function(phone,compaign,media,agency,id,clickTime,installTime
 
 exports.signalStatistics = function(strategy,asset,signalTime,direction,power,bid,stopLoss,takeProfit,won,avgJump,tpPeriod,slPeriod,potentialSL,potentialTP,min5,min10,min15,max5,max10,max15,callback) {
 	var bidLength = bid.trim().length;
+	
+	var intervalTime = new Date( (now.getTime() - ((now.getMinutes() % 5)*60000) - (now.getSeconds()*1000+now.getMilliseconds())));
+	var id = getHashCode(intervalTime + "" + strategy + asset+direction+power+bid+won);
+	
 	var params = {
 		action:"upsert",
 		model:"signals",
+		"key:number:signalid":id,
 		"field:options:strategy":strategy.trim(),
 		"field:options:asset":asset.trim(),
 		"field:date:signalTime":signalTime.trim(),
@@ -254,3 +259,7 @@ function cutString(str,maxLength) {
 	if (str && str.length>maxLength) return str.substring(0,maxLength);
 	return str;
 }
+
+function getHashCode(s){
+	  return s.split("").reduce(function(a,b){a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);              
+	}
