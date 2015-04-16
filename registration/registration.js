@@ -46,14 +46,58 @@ exports.register = function(ip,fname,lname,email,country,language,refCat,ref,num
 					});
 					
 					
-				}
-			});
+				} //end (else of if isregistered)
+			});//end of isregistered call
 
-		}
+		} // if status =0 || 1
 		else {
 			callback(status,err);
 		}
 	});
+
+};
+
+exports.register2 = function(ip,fname,lname,email,country,language,refCat,ref,callback) {
+	
+			isAllreadyRegistered(number,fname,lname,function(isPhoneRegistered) {
+				if (isPhoneRegistered) {
+					callback(0);
+				}
+				else {
+					// add lead to the db
+					/*models.leads.create({	
+						firstName: fname,
+						lastName:  lname,
+						email:  email,
+						country:  country,
+						phone:  number,
+						language:  language,
+						refCat:  refCat,
+						ref:  ref,
+						sentToCRM: false,
+						sentToCRM2: false,
+						timestamp: new Date().getTime()
+					},function(err) {
+						
+
+					});*/
+					blackboxcrm.addUser(ip,fname,lname,email,country,language,refCat,ref,function(status,err) {
+						if (status==0) {
+							//updateLead(number,"sentToCRM2",true);
+						}
+						callback(status,err);
+					});
+
+					activeCompaign.addContact(fname,lname,email,number,country,language,refCat,ref,function(status,err) {
+						if (err) console.log(err);
+					});
+					
+					
+				}
+			});
+
+		
+	
 
 };
 

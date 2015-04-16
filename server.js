@@ -1,6 +1,6 @@
 var appSettings = {
-		showPlus500:true,
-		minVersion:16
+		showPlus500:false,
+		minVersion:27
 }
 
 var GA_ID = "UA-48596629-2";
@@ -223,14 +223,20 @@ app.post('/getBroker',function(req,res) {
 		blackboxcrm.getBroker(req.body.number,function(broker,err) {
 			if (err || !broker) {
 				res.writeHead(400);
-				console.log(err);
-				if (err=="No Broker") {
-					res.write(2+"");
+				try {
+					var parsed = JSON.parse(err);
+					if (parsed && parsed.errorNum == 1) {
+						// No Broker 
+						res.write(2+"");
+					}
+					else {
+						res.write(1+"");
+					}
 				}
-				else {
+				catch (e) {
 					res.write(1+"");
 				}
-				
+
 				res.end();
 			}
 			else {
@@ -247,7 +253,32 @@ app.post('/getBroker',function(req,res) {
 
 });
 
-app.post('/brokermatch',function(req,res) {
+app.post('/sendLead',function(req,res) {
+	if (req.body.number) {
+		blackboxcrm.sendLead(req.body.number,req.body.fname,req.body.lname,function(err,phone) {
+			if (err) {
+				res.writeHead(400);
+				console.log(err);
+				res.end();
+			}
+			else {
+				if (req.body.email) {
+					activeCompaign.sendEvent(req.body.email,"Lead Sent",req.body.broker,function(){});
+				}
+				res.send("0");
+			}
+		});
+	}
+
+	else {
+		res.writeHead(400);
+		res.write("No number");
+		res.end();
+	}
+
+});
+
+/*app.post('/brokermatch',function(req,res) {
 	if (req.body.number) {
 		blackboxcrm.brokermatch(req.body.number,function(broker,err) {
 			if (err || !broker) {
@@ -281,7 +312,7 @@ app.post('/brokermatch',function(req,res) {
 	}
 
 });
-
+*/
 
 
 app.post('/experienced',function(req,res) {
@@ -466,20 +497,26 @@ app.post('/validateNumber', function(req, res) {
 	var ip = getClientAddress(req);
 	
 	phoneValidation.sendSMS(req.body.number,ip,function(status,err) {
-		res.send(""+status);
+		//res.send(""+status);
+		
 		if (err) {
 			console.log("Error validateNumber returned " +status +":" + err);
 		}
 		//If its an error from nexmo
-		if (status>0 && status!=6 && status!=1) {
-			var error = nexmo.getResponseDetails(status);
-			if (error) {
-				blackboxcrm.notify("SMS Verification Error","Faild to send SMS to client","Number: " + req.body.number + "<br />Error number: " + status + "<br />Error message: " + error.message + "<br />Description: " + error.description ,"warning",true,function(){});
+		if (status>100) {
+			if (status!=106) {
+				var error = nexmo.getResponseDetails(status-100);
+				if (error) {
+					blackboxcrm.notify("SMS Verification Error","Faild to send SMS to client","Number: " + req.body.number + "<br />Error number: " + status + "<br />Error message: " + error.message + "<br />Description: " + error.description ,"warning",true,function(){});
+				}
+				else {
+					blackboxcrm.notify("SMS Verification Error","Faild to send SMS to client","Number: " + req.body.number + "<br />Error number: " + status + "<br />Error message: " + err,"warning",true,function(){});
+				}
 			}
-			else {
-				blackboxcrm.notify("SMS Verification Error","Faild to send SMS to client","Number: " + req.body.number + "<br />Error number: " + status + "<br />Error message: " + err,"warning",true,function(){});
-			}
-
+			res.send("6");
+		}
+		else {
+			res.send(""+status);
 		}
 	});
 });
@@ -511,6 +548,46 @@ app.post('/register', function(req, res) {
 		var ip = getClientAddress(req);
 		var country = getCountry(req.body.number,ip,req.body.country);
 		registration.register(ip,req.body.fname,req.body.lname,req.body.email,country,req.body.language,cat,ref,req.body.number,req.body.country_code,req.body.code,function(status,err) {
+			res.send(""+status);
+			if (err) {
+				console.log("Error /register returned " +status +":" + err);
+			}
+			if (status==0) {
+				//analitcs
+				if (ref && cat) {
+					var visitor= ua(GA_ID);
+					visitor.event(cat, "Lead" ,ref,function(err) {
+						console.log("stat Lead err=" + err);
+					}).send();
+
+				}
+			}
+
+		});
+
+	};
+	if (req.body.cat && req.body.ref) { 
+		registerFunc(req.body.ref,req.body.cat);
+	}
+	else {
+		tracker.getRef(getClientAddress(req),registerFunc,function() {
+			console.log("Error looking for tracker user");
+			res.send("88");
+		});
+	}
+
+
+
+
+
+});
+
+
+
+app.post('/register2', function(req, res) {
+	var registerFunc = function(ref,cat) {
+		var ip = getClientAddress(req);
+		registration.register2(ip,req.body.fname,req.body.lname,req.body.email,req.body.country,req.body.language,cat,ref,function(status,err) {
 			res.send(""+status);
 			if (err) {
 				console.log("Error /register returned " +status +":" + err);

@@ -28,6 +28,7 @@ var excludedCounties = [
 
 
 exports.validatePhone = function(number,code,callback) {
+	
 	if (isExcluded(number)) {
 		callback(EXLUDED_COUNTRY);
 		return;
@@ -96,7 +97,7 @@ exports.sendSMS = function(number,ip,callback) {
 						});
 					}
 					else {
-						callback(status,err);
+						callback(status+100,err);
 					}
 				});
 				

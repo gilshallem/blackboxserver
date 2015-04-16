@@ -46,6 +46,29 @@ exports.addLead = function(ip,fname,lname,email,country,phone,countryCode,langua
 };
 
 
+exports.addUser = function(ip,fname,lname,email,country,language,refCat,ref,callback) {
+	needle.post(ACTION_URL, {
+		action:"upsert",
+		model:"leads",
+		"field:text:ip":ip.trim(),
+		"field:text:fname":fname.trim(),
+		"field:text:lname":lname.trim(),
+		"field:text:email":email.trim(),
+		"field:options:country":country.trim(),
+		"field:options:language":language.trim(),
+		"field:options:refferal_category" : refCat,
+		"field:options:refferal" : ref
+	}, function(err, resp, body) {
+		if (err || resp.statusCode!=200) {
+			callback(-1,err,phone);
+		}
+		else {
+			callback(0,null,phone);
+		}
+	});
+};
+
+
 exports.updateSubscription = function(phone,orderID,callback) {
 	var params = {
 			action:"upsert",
@@ -222,7 +245,7 @@ exports.brokermatch = function (phone,callback)  {
 exports.getBroker = function (phone,callback)  {
 	needle.post(ACTION_URL, {
 		action:"externalPlugin",
-		plugin:"brokermatch",
+		plugin:"brokers",
 		plugin_action:"getBroker",
 		phone:phone
 	}, function(err, resp, body) {
@@ -231,6 +254,25 @@ exports.getBroker = function (phone,callback)  {
 		}
 		else {
 			callback(body,null,phone);
+		}
+	});
+};
+
+exports.sendLead = function (phone,fname,lname,callback)  {
+	needle.post(ACTION_URL, {
+		action:"externalPlugin",
+		plugin:"brokers",
+		plugin_action:"sendLead",
+		phone:phone,
+		fname:fname,
+		lname:lname
+		
+	}, function(err, resp, body) {
+		if (err || resp.statusCode!=200) {
+			callback(err ? err : "Error: " + body,phone);
+		}
+		else {
+			callback(null,phone);
 		}
 	});
 };
