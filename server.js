@@ -128,6 +128,11 @@ var getClientAddress = function (req) {
 
 statistics.start();
 
+app.use(function (req, res, next) {
+	  res.header("Access-Control-Allow-Origin", "*");
+	  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+	  next();      
+	}); 
 
 app.post('/getMinVersion', function(req, res) {
 	res.send(appSettings.minVersion+"");
