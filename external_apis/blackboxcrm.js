@@ -1,5 +1,5 @@
 var ACTION_URL = "https://blackboxcrm.herokuapp.com/api";
-//ACTION_URL = "http://127.0.0.1:3000/api";
+ACTION_URL = "http://127.0.0.1:3000/api";
 var needle = require('needle');
 
 
@@ -247,6 +247,22 @@ exports.getBroker = function (phone,callback)  {
 		action:"externalPlugin",
 		plugin:"brokers",
 		plugin_action:"getBroker",
+		phone:phone
+	}, function(err, resp, body) {
+		if (err || resp.statusCode!=200) {
+			callback(null,err ? err : body+"",phone);
+		}
+		else {
+			callback(body,null,phone);
+		}
+	});
+};
+
+exports.getDetails = function (phone,callback)  {
+	needle.post(ACTION_URL, {
+		action:"externalPlugin",
+		plugin:"brokers",
+		plugin_action:"getDetails",
 		phone:phone
 	}, function(err, resp, body) {
 		if (err || resp.statusCode!=200) {

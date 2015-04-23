@@ -223,6 +223,27 @@ app.post('/executeSignal',function(req,res) {
 
 });
 
+app.post('/getDetails',function(req,res) {
+	if (req.body.number) {
+		blackboxcrm.getDetails(req.body.number,function(details,err) {
+			if (err || !details) {
+				res.writeHead(400);
+				res.end();
+			}
+			else {
+				res.send(details);
+			}
+		});
+	}
+
+	else {
+		res.writeHead(400);
+		res.write("No number");
+		res.end();
+	}
+});
+	
+
 app.post('/getBroker',function(req,res) {
 	if (req.body.number) {
 		blackboxcrm.getBroker(req.body.number,function(broker,err) {
