@@ -1,7 +1,7 @@
 var appSettings = {
 		showPlus500:false,
 		minVersion:27
-}
+} 
 
 var GA_ID = "UA-48596629-2";
 var express = require("express");
