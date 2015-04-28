@@ -36,6 +36,12 @@ exports.phoneValidate = mongoose.model('phone_validation',new mongoose.Schema({
 
 },{ autoIndex: false }));
 
+exports.approvedNumbers = mongoose.model('approved_numbers',new mongoose.Schema({
+	number: String,
+	timestamp: Number
+
+},{ autoIndex: false }));
+
 exports.leads = mongoose.model('leads',new mongoose.Schema({
 	firstName: String,
 	lastName:  String,

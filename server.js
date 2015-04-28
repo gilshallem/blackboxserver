@@ -555,6 +555,27 @@ app.post('/setSubscription', function(req, res) {
 	});
 });
 
+app.get('/approvePhone', function(req, res) {
+	if (req.query.password=="gil113322" && req.query.number) {
+		var newNumber  =new models.approvedNumbers({
+			number:req.query.number,
+			timestamp: new Date().getTime()
+		});
+		newNumber.save(function(dbErr) {
+			if (dbErr) {
+				res.send("Error: " + dbErr);
+			}
+			else {
+				res.send("Success");
+			}
+		});
+	}
+	else {
+		res.send("Bad Password");
+	}
+	
+});
+
 app.post('/setAppsFlyer', function(req, res) {
 	
 	blackboxcrm.updateAF(req.body.number,req.body.compaign,req.body.media,req.body.agency,req.body.id,req.body.clickTime,req.body.installTime,req.body.siteId,req.body.fbAdGroup,req.body.fbAdSet,function(status,err) {
