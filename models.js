@@ -87,7 +87,8 @@ exports.signals = mongoose.model('signals',new mongoose.Schema({
 	bid: Number,
 	stopLoss: Number,
 	takeProfit: Number,
-	timestamp: Number
+	timestamp: Number,
+	server_timestamp: Number
 
 },{ autoIndex: false }));
 

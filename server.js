@@ -746,7 +746,7 @@ app.post('/getSignals', function(req, res) {
 	res.header('Pragma', 'no-cache');
 	var query = models.signals.find({ asset:req.body.asset, strategy: req.body.strategy });
 	if (req.body.from!=null) {
-		query.where('timestamp').gt(req.body.from);
+		query.where('server_timestamp').gt(req.body.from);
 	}
 	query.exec(function(err, result) { 
 		if (!err) {
@@ -767,7 +767,8 @@ app.post('/addSignal', function(req, res) {
 			bid:  req.body.bid,
 			stopLoss:  req.body.sl,
 			takeProfit:  req.body.tp,
-			timestamp: parseInt ( req.body.timestamp)
+			timestamp: parseInt ( req.body.timestamp),
+			server_timestamp: new Date().getTime()
 			
 			
 		});
