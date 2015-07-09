@@ -758,7 +758,7 @@ app.post('/getSignals', function(req, res) {
 	});
 });
 
-app.get('/addSignal', function(req, res) {
+app.post('/addSignal', function(req, res) {
 	
 		var newSignal  =new models.signals({
 			strategy:  req.query.strategy,
