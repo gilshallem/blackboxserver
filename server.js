@@ -761,13 +761,13 @@ app.post('/getSignals', function(req, res) {
 app.post('/addSignal', function(req, res) {
 	
 		var newSignal  =new models.signals({
-			strategy:  req.query.strategy,
-			asset:  req.query.asset,
-			power:  req.query.power,
-			bid:  req.query.bid,
-			stopLoss:  req.query.sl,
-			takeProfit:  req.query.tp,
-			timestamp: parseInt ( req.query.timestamp)
+			strategy:  req.body.strategy,
+			asset:  req.body.asset,
+			power:  req.body.power,
+			bid:  req.body.bid,
+			stopLoss:  req.body.sl,
+			takeProfit:  req.body.tp,
+			timestamp: parseInt ( req.body.timestamp)
 			
 			
 		});
