@@ -764,7 +764,7 @@ app.post('/addSignal', function(req, res) {
 			strategy:  req.body.strategy,
 			asset:  req.body.asset,
 			power:  req.body.power,
-			price:  req.body.bid,
+			price:  req.body.price,
 			stopLoss:  req.body.sl,
 			takeProfit:  req.body.tp,
 			timestamp: parseInt ( req.body.timestamp),
