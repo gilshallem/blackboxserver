@@ -771,7 +771,7 @@ app.post('/addSignal', function(req, res) {
 			
 			
 		});
-		newNumber.save(function(dbErr) {
+		newSignal.save(function(dbErr) {
 			if (dbErr) {
 				res.send("Error: " + dbErr);
 			}
