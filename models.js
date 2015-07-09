@@ -84,7 +84,7 @@ exports.signals = mongoose.model('signals',new mongoose.Schema({
 	strategy: String,
 	asset: String,
 	power: Number,
-	bid: Number,
+	price: Number,
 	stopLoss: Number,
 	takeProfit: Number,
 	timestamp: Number,

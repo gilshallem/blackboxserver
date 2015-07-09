@@ -30,7 +30,7 @@ exports.start = function() {
 function shrinkSignals() {
 	var now = new Date().getTime();
 	var before = now - (MAX_SIGNALS_HISTORY_SECOUNDS * 1000);
-	models.signals.remove({ timestamp:{$lt: before} }, function(err) {
+	models.signals.remove({ server_timestamp:{$lt: before} }, function(err) {
 		if (!err) {
 			console.log("Old signals removed");
 			
