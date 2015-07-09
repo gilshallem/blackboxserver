@@ -1,4 +1,5 @@
 var MAX_FOREX_HISTORY		 				= 200;
+var MAX_SIGNALS_HISTORY_SECOUNDS			= 60;
 var MAX_PHONE_VALIDATION_HISTORY_MINUTES 	= 30;
 var MAX_TRACKER_MINUTES 					= 60;
 var MAX_LEADS_DAYS		 					= 7;
@@ -18,6 +19,7 @@ exports.start = function() {
 			shrinkPhoneValidation();
 			shrinkTracker();
 			shrinkLeads();
+			shrinkSignals();
 		},
 		start: true
 
@@ -25,6 +27,19 @@ exports.start = function() {
 	job.start();
 }
 
+function shrinkSignals() {
+	var now = new Date().getTime();
+	var before = now - (MAX_SIGNALS_HISTORY_SECOUNDS * 1000);
+	models.signals.remove({ timestamp:{$lt: before} }, function(err) {
+		if (!err) {
+			console.log("Old signals removed");
+			
+		}
+		else {
+			console.log("Error removing signals: "+ err.message);
+		}
+	});
+}
 
 function shrinkForexData_OLD() {
 	var now = new Date().getTime();

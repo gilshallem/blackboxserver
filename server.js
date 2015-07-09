@@ -740,6 +740,50 @@ app.post('/getStatistics', function(req, res) {
 	}
 });
 
+app.post('/getSignals', function(req, res) {
+	res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+	res.header('Expires', '-1');
+	res.header('Pragma', 'no-cache');
+	var query = models.signals.find({ asset:req.body.asset, strategy: req.body.strategy });
+	if (req.body.from!=null) {
+		query.where('timestamp').gt(req.body.from);
+	}
+	query.exec(function(err, result) { 
+		if (!err) {
+			res.send(JSON.stringify(result));
+		} else {
+			console.log(err);
+			res.send(err);
+		};
+	});
+});
+
+app.get('/addSignal', function(req, res) {
+	
+		var newSignal  =new models.signals({
+			strategy:  req.query.strategy,
+			asset:  req.query.asset,
+			power:  req.query.power,
+			bid:  req.query.bid,
+			stopLoss:  req.query.sl,
+			takeProfit:  req.query.tp,
+			timestamp: parseInt ( req.query.timestamp)
+			
+			
+		});
+		newNumber.save(function(dbErr) {
+			if (dbErr) {
+				res.send("Error: " + dbErr);
+			}
+			else {
+				res.send("Success");
+			}
+		});
+	
+	
+});
+
+
 
 
 var port = Number(process.env.PORT || 2000);

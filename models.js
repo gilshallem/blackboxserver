@@ -79,3 +79,16 @@ exports.tracker = mongoose.model('tracker',new mongoose.Schema({
 	timestamp: Number
 
 },{ autoIndex: false }));
+
+exports.signals = mongoose.model('signals',new mongoose.Schema({
+	strategy: String,
+	asset: String,
+	power: Number,
+	bid: Number,
+	stopLoss: Number,
+	takeProfit: Number,
+	timestamp: Number
+
+},{ autoIndex: false }));
+
+
