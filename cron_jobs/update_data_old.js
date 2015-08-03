@@ -97,7 +97,7 @@ function updateData(trueFxOutput) {
 			assets[assetName].noChange=0;
 		}
 		newValues.push({asset:assetName,bid: bid,timestamp:now});
-		updateSignals(assetName,bid);
+		//updateSignals(assetName,bid);
 	}
 	
 	models.ForexHistory.create(newValues);
