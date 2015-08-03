@@ -80,16 +80,46 @@ exports.tracker = mongoose.model('tracker',new mongoose.Schema({
 
 },{ autoIndex: false }));
 
-exports.signals = mongoose.model('signals',new mongoose.Schema({
+var counter = mongoose.model('counter', new mongoose.Schema({
+    _id: {type: String, required: true},
+    seq: { type: Number, default: 0 }
+}));
+
+var signalsSchema = new mongoose.Schema({
 	strategy: String,
 	asset: String,
+	symbol: String,
+	cmd: Number,
+	slippage: Number,
 	power: Number,
 	price: Number,
 	stopLoss: Number,
 	takeProfit: Number,
-	timestamp: Number,
-	server_timestamp: Number
+	firedTime: Number,
+	lastUpdated: Number,
+	status: Number,
+	volume: Number,
+	magic: Number,
+    closePrice:Number,
+	ticket: Number,
 
-},{ autoIndex: false }));
+},{ autoIndex: false });
+
+signalsSchema.pre('save', function(next) {
+    var doc = this;
+    if (doc.isNew) {
+	    counter.findByIdAndUpdate({_id: 'signals'}, {$inc: { seq: 1} },{upsert: true, new: true}, function(error, counter)   {
+	        if(error)
+	            return next(error);
+	        doc.ticket = counter.seq;
+	        next();
+	    });
+	}
+	else {
+		next();
+	}
+});
+
+exports.signals = mongoose.model('signals',signalsSchema);
 
 

@@ -40,7 +40,8 @@ exports.start = function() {
 	var job = new cronJob({
 		cronTime: '* * * * *',
 		onTick: function() {
-			if (new Date().getTime()-lastUpdate>10000) {
+		    if (new Date().getTime() - lastUpdate > 10000) {
+		        
 				fruefx.getCurrencyUpdates(updateData);
 			}
 			lastUpdate = new Date().getTime();
@@ -96,6 +97,7 @@ function updateData(trueFxOutput) {
 			assets[assetName].noChange=0;
 		}
 		newValues.push({asset:assetName,bid: bid,timestamp:now});
+		updateSignals(assetName,bid);
 	}
 	
 	models.ForexHistory.create(newValues);
@@ -104,3 +106,40 @@ function updateData(trueFxOutput) {
 	
 
 }
+
+function updateSignals(asset,price) {
+    
+	var query = {asset:asset.replace("/",""),status:0,
+			$or: [
+			      { $and: [
+			               {power:{$gt:0}}, //buy
+			               {$or:[
+			                     {takeProfit:{$lt:price}},
+			                     {stopLoss:{$gt:price}}
+			                     ]}
+			               ]
+			      },
+			      { $and: [
+			               {power:{$lt:0}}, //sell
+			               {$or:[
+			                     {takeProfit:{$gt:price}},
+			                     {stopLoss:{$lt:price}}
+			                     ]}
+			               ]
+			      }
+			      ]
+	};
+	
+	models.signals.update(query, {
+	    $set: {
+	        status: 1,
+	        lastUpdated: new Date().getTime(),
+            closePrice: price
+	    }
+	}, function (err,r) {
+		if (err) {
+			console.log("error closing signals:" + err);
+		}
+		
+	})
+} 

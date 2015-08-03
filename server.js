@@ -744,11 +744,19 @@ app.post('/getSignals', function(req, res) {
 	res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
 	res.header('Expires', '-1');
 	res.header('Pragma', 'no-cache');
-	var query = models.signals.find({ asset:req.body.asset, strategy: req.body.strategy });
-	if (req.body.from!=null) {
-		query.where('server_timestamp').gt(req.body.from);
+	var query = { 
+			asset:req.body.asset, 
+			strategy: req.body.strategy,
+			lastUpdated: { $gt: req.body.from }
+		};
+
+	if (req.body.ticket != null) {
+	    query['ticket'] = parseInt(req.body.ticket);
 	}
-	query.exec(function(err, result) { 
+	else {
+	    query['status'] = 0;
+	}
+	models.signals.find(query).exec(function(err, result) { 
 		if (!err) {
 			res.send(JSON.stringify(result));
 		} else {
@@ -759,25 +767,33 @@ app.post('/getSignals', function(req, res) {
 });
 
 app.post('/addSignal', function(req, res) {
-	
-		var newSignal  =new models.signals({
-			strategy:  req.body.strategy,
-			asset:  req.body.asset,
-			power:  req.body.power,
-			price:  req.body.price,
-			stopLoss:  req.body.sl,
-			takeProfit:  req.body.tp,
-			timestamp: parseInt ( req.body.timestamp),
-			server_timestamp: new Date().getTime()
-			
-			
-		});
+		var now = new Date().getTime();
+		var values = {
+				strategy:  req.body.strategy,
+				asset:  req.body.asset,
+				symbol:  req.body.symbol,
+				cmd: parseInt( req.body.cmd),
+				power: parseInt(  req.body.power),
+				price:  parseFloat(req.body.price),
+				stopLoss:  parseFloat(req.body.sl),
+				takeProfit:  parseFloat(req.body.tp),
+				slippage: parseInt(req.body.slippage),
+				firedTime: now,
+				lastUpdated: now,
+				status: 0,
+				volume: parseFloat(req.body.volume),
+				magic: parseInt( req.body.magic)
+				
+				
+			};
+		
+		var newSignal  =new models.signals(values);
 		newSignal.save(function(dbErr) {
 			if (dbErr) {
 				res.send("Error: " + dbErr);
 			}
 			else {
-				res.send("Success");
+				res.send(""+newSignal.ticket);
 			}
 		});
 	
@@ -786,8 +802,118 @@ app.post('/addSignal', function(req, res) {
 
 
 
+app.post('/modifySignal', function(req, res) {
+	
+	models.signals.findOne({ticket:parseInt(req.body.ticket), symbol:req.body.symbol,strategy:  req.body.strategy }, function (err, signal){
+		if (err) {
+			console.log("Error: " + err)
+			res.send("Error: " + err);
+			
+		}
+		else {
+			if (signal==null) {
+				console.log("Error: invalid ticket number")
+				res.send("Error: invalid ticket number");
+			}
+			else {
+				signal.stopLoss = parseFloat(req.body.sl);
+				signal.takeProfit = parseFloat(req.body.tp);
+				signal.lastUpdated =new Date().getTime(); 
+				signal.save(function(dbErr) {
+					if (dbErr) {
+						console.log("Error: " + dbErr)
+						res.send("Error: " + dbErr);
+					}
+					else {
+						
+						res.send("true");
+					}
+				});
+			}
+		}
+		
+	});
+	
 
-var port = Number(process.env.PORT || 2000);
+
+});
+
+app.post('/closeSignal', function(req, res) {
+	console.log(req.body.ticket + "," + req.body.symbol + "," + req.body.strategy);
+	models.signals.findOne({ticket:parseInt(req.body.ticket), symbol:req.body.symbol,strategy:  req.body.strategy }, function (err, signal){
+		if (err) {
+			console.log("Error: " + err)
+			res.send("Error: " + err);
+			
+		}
+		else {
+			if (signal==null) {
+				console.log("Error: invalid ticket number")
+				res.send("Error: invalid ticket number");
+			}
+			else {
+				if (signal.status==1) {
+					console.log("Signal was already close")
+					res.send("Signal was already close");
+				}
+				else {
+					signal.status = 1;
+					signal.lastUpdated = new Date().getTime();
+					signal.closePrice = parseFloat(req.body.closePrice);
+					signal.save(function(dbErr) {
+						if (dbErr) {
+							console.log("dbErr: " + dbErr)
+							res.send("Error: " + dbErr);
+						}
+						else {
+							
+							res.send("true");
+						}
+					});
+					
+				}
+				
+			}
+		}
+		
+	});
+	
+
+
+});
+app.post("/getOpenSignals", function(req, res) {
+	res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+	res.header('Expires', '-1');
+	res.header('Pragma', 'no-cache');
+	var query = models.signals.find({symbol:req.body.symbol, strategy: req.body.strategy, status:0 });
+	query.exec(function(err, result) { 
+		if (!err) {
+			var output = [];
+			for (var i=0;i<result.length;i++) {
+				output.push({
+						cmd: result[i].cmd,
+						volume: result[i].volume,
+						price: result[i].price,
+						stoploss: result[i].stopLoss,
+						takeprofit: result[i].takeProfit,
+						slippage: result[i].slippage,
+						ticket: result[i].ticket,
+						magic: result[i].magic
+				});
+			}
+			
+			res.send(JSON.stringify(output));
+		} else {
+			console.log(err);
+			res.send(err);
+		};
+	});
+	
+});
+
+
+
+var port = Number(process.env.PORT || 80);
 
 app.listen(port, function() {
 	console.log("Listening on " + port);
