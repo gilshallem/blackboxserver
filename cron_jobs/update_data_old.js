@@ -72,21 +72,24 @@ function startSumming() {
 
 
 exports.isUnchanged = function(assetName) {
-    if (assets[assetName]==null) return false;
-    var now = new Date().getTime();
-    return assets[assetName].lastChange && assets[assetName].lastChange>=now - MAX_NO_CHANGE;
+    return !isAssetUpdated(assetName);
 };
 
 exports.getUnchangedAssets = function() {
     var unchangedAssets = [];
     var now = new Date().getTime();
-	for (assetName in assets) {
-	    if (assets[assetName].lastChange && assets[assetName].lastChange >= now - MAX_NO_CHANGE) {
+    for (assetName in assets) {
+        if (!isAssetUpdated(assetName)) {
 			unchangedAssets.push(assetName);
 		}
-	}
+    }
 	return unchangedAssets;
 };
+
+function isAssetUpdated(asset) {
+    var now = new Date().getTime();
+    return asset && assets[asset] && assets[assetName].lastChange && assets[assetName].lastChange >= now - MAX_NO_CHANGE;
+}
 
 exports.getAssetCount = function() {
 	
