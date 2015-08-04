@@ -102,6 +102,7 @@ cronUpdateData_OLD.start();
 var cronShrinkData =  require('./cron_jobs/shrink_data');
 cronShrinkData.start();
 
+
 //send pending leads
 //var cronSendLeads =  require('./cron_jobs/send_leads');
 //cronSendLeads.start();
@@ -175,9 +176,7 @@ app.post('/openApp', function(req, res) {
 
 
 });
-app.all('/test', function (req,res) {
 
-});
 
 app.all('/pixel.gif', pixelTracker.middleware);
 app.get('/link', function (req,res) {

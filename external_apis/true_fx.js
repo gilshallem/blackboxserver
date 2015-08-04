@@ -44,7 +44,7 @@ function getUpdates(onUpdate,onError) {
 	}
 	else {
 		//console.log("Getting data from TrueFx");
-		options.path = PATH + "?id=" + sessionId ;
+	    options.path = PATH + "?id=" + sessionId + "&f=csv&c=" + ALL_CORRENCIES;
 
 		http.get(options, function(resp){
 			var outData="";
@@ -68,7 +68,8 @@ function getUpdates(onUpdate,onError) {
 //This will parse a delimited string into an array of
 //arrays. The default delimiter is the comma, but this
 //can be overriden in the second argument.
-function CSVToArray( strData, strDelimiter ){
+function CSVToArray(strData, strDelimiter) {
+    
 //	Check to see if the delimiter is defined. If not,
 //	then default to comma.
 	strDelimiter = (strDelimiter || ",");
