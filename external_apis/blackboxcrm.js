@@ -174,6 +174,42 @@ exports.signalStatistics = function(strategy,asset,signalTime,direction,power,bi
 	});
 };
 
+exports.sendSignalStatistics = function (signal, callback) {
+
+
+    var params = {
+        action: "upsert",
+        model: "signals2",
+        "key:number:ticket": signal.ticket,
+        "field:options:ea": signal.ea.trim(),
+        "field:options:strategy": signal.strategy.trim(),
+        "field:options:asset": signal.asset.trim(),
+        "field:date:signalTime": signal.firedTime,
+        "field:options:direction": signal.power >0 ? "BUY" : "SELL",
+        "field:number:power": signal.power,
+        "field:number:openPrice": signal.price,
+        "field:number:closePrice": signal.closePrice,
+        "field:number:stopLoss": signal.stopLoss,
+        "field:number:takeProfit": signal.takeProfit.trim()
+    }
+
+
+    needle.post(ACTION_URL, params, function (err, resp, body) {
+        if (callback) {
+            if (err || resp.statusCode != 200) {
+                callback(-1, err);
+            }
+            else {
+                callback(0, null);
+            }
+        }
+        else {
+            if (err || resp.statusCode != 200)
+                console.log("Error sending signal stats: " + err);
+        }
+    });
+};
+
 exports.sendBrokerFeed = function(number,contacted , account , executed , rating , comments,callback) {
 	needle.post(ACTION_URL, {
 		action:"upsert",

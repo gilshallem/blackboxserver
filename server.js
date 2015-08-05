@@ -768,7 +768,8 @@ app.post('/getSignals', function(req, res) {
 app.post('/addSignal', function(req, res) {
 		var now = new Date().getTime();
 		var values = {
-				strategy:  req.body.strategy,
+		    strategy: req.body.strategy,
+            ea: req.body.ea,
 				asset:  req.body.asset,
 				symbol:  req.body.symbol,
 				cmd: parseInt( req.body.cmd),

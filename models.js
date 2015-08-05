@@ -1,4 +1,5 @@
 var mongoose = require ("mongoose");
+var blackboxcrm = require("./external_apis/blackboxcrm");
 
 exports.ForexHistory = mongoose.model('ForexHistory',new mongoose.Schema({
 	asset: String,
@@ -86,7 +87,8 @@ var counter = mongoose.model('counter', new mongoose.Schema({
 }));
 
 var signalsSchema = new mongoose.Schema({
-	strategy: String,
+    strategy: String,
+    ea: String,
 	asset: String,
 	symbol: String,
 	cmd: Number,
@@ -118,6 +120,12 @@ signalsSchema.pre('save', function(next) {
 	else {
 		next();
 	}
+});
+
+signalsSchema.post('save', function (signal) {
+    if (signal.status = 1) {
+        blackboxcrm.sendSignalStatistics(signal);
+    }
 });
 
 exports.signals = mongoose.model('signals',signalsSchema);
