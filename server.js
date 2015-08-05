@@ -913,7 +913,7 @@ app.post("/getOpenSignals", function(req, res) {
 
 
 
-var port = Number(process.env.PORT || 80);
+var port = Number(process.env.PORT || 81);
 
 app.listen(port, function() {
 	console.log("Listening on " + port);

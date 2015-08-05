@@ -190,7 +190,7 @@ exports.sendSignalStatistics = function (signal, callback) {
         "field:number:openPrice": signal.price,
         "field:number:closePrice": signal.closePrice,
         "field:number:stopLoss": signal.stopLoss,
-        "field:number:takeProfit": signal.takeProfit.trim()
+        "field:number:takeProfit": signal.takeProfit
     }
 
 
