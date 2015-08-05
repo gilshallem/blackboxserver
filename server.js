@@ -803,7 +803,7 @@ app.post('/addSignal', function(req, res) {
 
 app.post('/modifySignal', function(req, res) {
 	
-	models.signals.findOne({ticket:parseInt(req.body.ticket), symbol:req.body.symbol,strategy:  req.body.strategy }, function (err, signal){
+	models.signals.findOne({ticket:parseInt(req.body.ticket), symbol:req.body.symbol,strategy:  req.body.strategy,status:0 }, function (err, signal){
 		if (err) {
 			console.log("Error: " + err)
 			res.send("Error: " + err);
@@ -811,8 +811,8 @@ app.post('/modifySignal', function(req, res) {
 		}
 		else {
 			if (signal==null) {
-				console.log("Error: invalid ticket number")
-				res.send("Error: invalid ticket number");
+				console.log("Error: invalid signal")
+				res.send("Error: invalid signal");
 			}
 			else {
 				signal.stopLoss = parseFloat(req.body.sl);
