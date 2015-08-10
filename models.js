@@ -87,7 +87,6 @@ var counter = mongoose.model('counter', new mongoose.Schema({
 }));
 
 var signalsSchema = new mongoose.Schema({
-    strategy: String,
     ea: String,
 	asset: String,
 	symbol: String,

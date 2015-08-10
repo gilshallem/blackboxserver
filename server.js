@@ -766,7 +766,6 @@ app.post('/getSignals', function(req, res) {
 	else {
 	    query['status'] = 0;
 	}
-	console.log(query);
 	models.signals.find(query).exec(function(err, result) { 
 		if (!err) {
 			res.send(JSON.stringify(result));
@@ -794,7 +793,8 @@ app.post('/addSignal', function(req, res) {
 				status: 0,
 				volume: parseFloat(req.body.volume),
 				magic: parseInt(req.body.magic),
-                comment: req.body.comment
+				comment: req.body.comment,
+            
 				
 				
 			};
@@ -816,7 +816,14 @@ app.post('/addSignal', function(req, res) {
 
 app.post('/modifySignal', function(req, res) {
 	
-	models.signals.findOne({ticket:parseInt(req.body.ticket), symbol:req.body.symbol,ea:  req.body.ea,status:0 }, function (err, signal){
+    models.signals.findOne({
+        ticket: parseInt(req.body.ticket), symbol: req.body.symbol, ea: req.body.ea, status: 0,
+        $or: [
+            { stopLoss: { $ne: parseFloat(req.body.sl) } },
+            { takeProfit: { $ne: parseFloat(req.body.tp) } }
+            ]
+
+    }, function (err, signal) {
 		if (err) {
 			console.log("Error: " + err)
 			res.send("Error: " + err);
@@ -830,7 +837,7 @@ app.post('/modifySignal', function(req, res) {
 			else {
 				signal.stopLoss = parseFloat(req.body.sl);
 				signal.takeProfit = parseFloat(req.body.tp);
-				signal.lastUpdated =new Date().getTime(); 
+				signal.lastUpdated = new Date().getTime();
 				signal.save(function(dbErr) {
 					if (dbErr) {
 						console.log("Error: " + dbErr)
