@@ -184,13 +184,14 @@ exports.sendSignalStatistics = function (signal, callback) {
         "field:options:ea": signal.ea.trim(),
         "field:options:strategy": signal.strategy.trim(),
         "field:options:asset": signal.asset.trim(),
-        "field:date:signalTime": signal.firedTime,
+        "field:Date:openTime": new Date(signal.firedTime),
         "field:options:direction": signal.power >0 ? "BUY" : "SELL",
         "field:number:power": signal.power,
         "field:number:openPrice": signal.price,
         "field:number:closePrice": signal.closePrice,
         "field:number:stopLoss": signal.stopLoss,
-        "field:number:takeProfit": signal.takeProfit
+        "field:number:takeProfit": signal.takeProfit,
+        "field:Date:closeTime":new Date()
     }
 
 

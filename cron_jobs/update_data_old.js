@@ -161,7 +161,8 @@ function updateSignals(asset, price) {
 			      }
             ]
         };
-
+        //models.signals.find(query).exec(function(err, result) { 
+        //}
         models.signals.update(query, {
             $set: {
                 status: 1,
@@ -172,7 +173,9 @@ function updateSignals(asset, price) {
             if (err) {
                 console.log("error closing signals:" + err);
             }
-
+           
+            
         })
     }
+   // blackboxcrm.sendSignalStatistics(this);
 } 

@@ -3,6 +3,10 @@ var appSettings = {
 		minVersion:27
 } 
 
+var strategies = {
+    strategy1: ["universalMACrossEAV1.1"]
+}
+
 var GA_ID = "UA-48596629-2";
 var express = require("express");
 var logfmt = require("logfmt");
@@ -738,23 +742,31 @@ app.post('/getStatistics', function(req, res) {
 		res.send(JSON.stringify(["0","0","0"]));
 	}
 });
-
+// fired by the app
 app.post('/getSignals', function(req, res) {
 	res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
 	res.header('Expires', '-1');
 	res.header('Pragma', 'no-cache');
-	var query = { 
+	if (!strategies[req.body.strategy]) {
+	    res.send("invalid strategy");
+	    return;
+	}
+	var query = {
 			asset:req.body.asset, 
-			strategy: req.body.strategy,
 			lastUpdated: { $gt: req.body.from }
-		};
-
+	};
+	var or = [];
+	for (var i = 0; i < strategies[req.body.strategy].length; i++) {
+	    or.push({ ea: strategies[req.body.strategy][i] });
+	}
+	query["$or"] = or;
 	if (req.body.ticket != null) {
 	    query['ticket'] = parseInt(req.body.ticket);
 	}
 	else {
 	    query['status'] = 0;
 	}
+	console.log(query);
 	models.signals.find(query).exec(function(err, result) { 
 		if (!err) {
 			res.send(JSON.stringify(result));
@@ -768,8 +780,7 @@ app.post('/getSignals', function(req, res) {
 app.post('/addSignal', function(req, res) {
 		var now = new Date().getTime();
 		var values = {
-		    strategy: req.body.strategy,
-            ea: req.body.ea,
+                ea: req.body.ea,
 				asset:  req.body.asset,
 				symbol:  req.body.symbol,
 				cmd: parseInt( req.body.cmd),
@@ -782,7 +793,8 @@ app.post('/addSignal', function(req, res) {
 				lastUpdated: now,
 				status: 0,
 				volume: parseFloat(req.body.volume),
-				magic: parseInt( req.body.magic)
+				magic: parseInt(req.body.magic),
+                comment: req.body.comment
 				
 				
 			};
@@ -804,7 +816,7 @@ app.post('/addSignal', function(req, res) {
 
 app.post('/modifySignal', function(req, res) {
 	
-	models.signals.findOne({ticket:parseInt(req.body.ticket), symbol:req.body.symbol,strategy:  req.body.strategy,status:0 }, function (err, signal){
+	models.signals.findOne({ticket:parseInt(req.body.ticket), symbol:req.body.symbol,ea:  req.body.ea,status:0 }, function (err, signal){
 		if (err) {
 			console.log("Error: " + err)
 			res.send("Error: " + err);
@@ -839,8 +851,8 @@ app.post('/modifySignal', function(req, res) {
 });
 
 app.post('/closeSignal', function(req, res) {
-	console.log(req.body.ticket + "," + req.body.symbol + "," + req.body.strategy);
-	models.signals.findOne({ticket:parseInt(req.body.ticket), symbol:req.body.symbol,strategy:  req.body.strategy }, function (err, signal){
+	console.log(req.body.ticket + "," + req.body.symbol + "," + req.body.ea);
+	models.signals.findOne({ticket:parseInt(req.body.ticket), symbol:req.body.symbol,ea:  req.body.ea }, function (err, signal){
 		if (err) {
 			console.log("Error: " + err)
 			res.send("Error: " + err);
@@ -885,7 +897,7 @@ app.post("/getOpenSignals", function(req, res) {
 	res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
 	res.header('Expires', '-1');
 	res.header('Pragma', 'no-cache');
-	var query = models.signals.find({symbol:req.body.symbol, strategy: req.body.strategy, status:0 });
+	var query = models.signals.find({symbol:req.body.symbol, ea: req.body.ea, status:0 });
 	query.exec(function(err, result) { 
 		if (!err) {
 			var output = [];
@@ -898,7 +910,8 @@ app.post("/getOpenSignals", function(req, res) {
 						takeprofit: result[i].takeProfit,
 						slippage: result[i].slippage,
 						ticket: result[i].ticket,
-						magic: result[i].magic
+						magic: result[i].magic,
+						comment: result[i].comment
 				});
 			}
 			

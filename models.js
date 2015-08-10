@@ -103,11 +103,13 @@ var signalsSchema = new mongoose.Schema({
 	volume: Number,
 	magic: Number,
     closePrice:Number,
-	ticket: Number,
+    ticket: Number,
+    comment: String
 
 },{ autoIndex: false });
 
-signalsSchema.pre('save', function(next) {
+signalsSchema.pre('save', function (next) {
+
     var doc = this;
     if (doc.isNew) {
 	    counter.findByIdAndUpdate({_id: 'signals'}, {$inc: { seq: 1} },{upsert: true, new: true}, function(error, counter)   {
@@ -117,16 +119,12 @@ signalsSchema.pre('save', function(next) {
 	        next();
 	    });
 	}
-	else {
+    else {
 		next();
 	}
 });
 
-signalsSchema.post('save', function (signal) {
-    if (signal.status = 1) {
-        blackboxcrm.sendSignalStatistics(signal);
-    }
-});
+
 
 exports.signals = mongoose.model('signals',signalsSchema);
 
