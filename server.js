@@ -4,7 +4,13 @@ var appSettings = {
 } 
 
 var strategies = {
-    strategy1: ["universalMACrossEAV1.1"]
+    test: ["test"],
+    strategy1: ["universalMACrossEAV1.1"],
+    strategy2: ["universalMACrossEAV1.1"],
+    strategy3: ["universalMACrossEAV1.1"],
+    strategy4: ["universalMACrossEAV1.1"],
+    strategy5: ["universalMACrossEAV1.1"]
+
 }
 
 var GA_ID = "UA-48596629-2";
