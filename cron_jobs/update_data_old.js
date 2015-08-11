@@ -142,8 +142,8 @@ function updateSignals(asset, price) {
                              { power: { $gt: 0 } }, //buy
                              {
                                  $or: [
-                                      { takeProfit: { $gt: price } },
-                                      { stopLoss: { $lt: price } }
+                                      { $and: [{ takeProfit: { $gt: price } }, { takeProfit: { $ne: 0 } }] },
+                                      { $and: [{ stopLoss: { $lt: price } }, { stopLoss: { $ne: 0 } }] }
                                  ]
                              }
 			          ]
@@ -153,8 +153,8 @@ function updateSignals(asset, price) {
                              { power: { $lt: 0 } }, //sell
                              {
                                  $or: [
-                                      { takeProfit: { $lt: price } },
-                                      { stopLoss: { $gt: price } }
+                                      { $and: [ {takeProfit: { $lt: price }},{takeProfit: { $ne: 0 }} ]},
+                                      { $and: [{ stopLoss: { $gt: price } }, { stopLoss: { $ne: 0 } }] }
                                  ]
                              }
 			          ]

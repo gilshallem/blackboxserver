@@ -5,10 +5,10 @@ var appSettings = {
 
 var strategies = {
     test: ["test"],
-    strategy1: ["universalMACrossEAV1.1"],
-    strategy2: ["universalMACrossEAV1.1"],
-    strategy3: ["universalMACrossEAV1.1"],
-    strategy4: ["universalMACrossEAV1.1"],
+    strategy1: ["gaps"],
+    strategy2: ["PipzuExtrapolated1.1"],
+    strategy3: ["RangerFX"],
+    strategy4: ["SAR ADX Expert Advisor"],
     strategy5: ["universalMACrossEAV1.1"]
 
 }
