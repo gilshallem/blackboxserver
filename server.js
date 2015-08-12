@@ -821,8 +821,8 @@ app.post('/addSignal', function (req, res) {
 				comment: req.body.comment,
 				truefx: {
 				    price: price,
-				    stopLoss: Math.max(0, parseFloat(req.body.sl) + diff),
-				    takeProfit: Math.max(0, parseFloat(req.body.tp) + diff)
+				    stopLoss: parseFloat(req.body.sl)==0 ? 0 : Math.max(0, parseFloat(req.body.sl) + diff),
+				    takeProfit: parseFloat(req.body.tp) == 0 ? 0 : Math.max(0, parseFloat(req.body.tp) + diff)
 				}
 				
 				
@@ -871,8 +871,8 @@ app.post('/modifySignal', function(req, res) {
 			    console.log("tp=" + truefxUpdator.getPrice(signal.asset));
 			    console.log("p=" + parseFloat(req.body.price));
 			    console.log("diff=" + diff);
-			    signal.truefx.stopLoss = Math.max(0, parseFloat(req.body.sl) + diff);
-			    signal.truefx.takeProfit = Math.max(0, parseFloat(req.body.tp) + diff);
+			    signal.truefx.stopLoss = parseFloat(req.body.sl) == 0 ? 0 : Math.max(0, parseFloat(req.body.sl) + diff);
+			    signal.truefx.takeProfit = parseFloat(req.body.tp) == 0 ? 0 : Math.max(0, parseFloat(req.body.tp) + diff);
 			    signal.markModified('truefx');
 
 				signal.stopLoss = parseFloat(req.body.sl);
