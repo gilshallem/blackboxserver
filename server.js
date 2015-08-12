@@ -808,7 +808,7 @@ app.post('/addSignal', function (req, res) {
 				asset:  req.body.asset,
 				symbol:  req.body.symbol,
 				cmd: parseInt( req.body.cmd),
-				power: getRandomIntInclusive(3,9), //parseInt(  req.body.power),
+				power: getRandomIntInclusive(3,9) * (parseInt(  req.body.power)>=0 ? 1 : -1),
 				price:  parseFloat(req.body.price),
 				stopLoss:  parseFloat(req.body.sl),
 				takeProfit:  parseFloat(req.body.tp),
