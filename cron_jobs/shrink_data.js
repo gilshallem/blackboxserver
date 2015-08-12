@@ -37,11 +37,11 @@ function shrinkSignals() {
 
 
     // close expired opened signals
-	models.signals.find({ status: 0, lastUpdated: { $lt: beforeOpen } }).exec(function (err, result) {
+	models.signals.find({ status: 0, lastUpdated: { $lt: beforeOpen } }).exec(function (err, signals) {
 	    for (var i = 0; i < signals.length; i++) {
 	        signals[i].status = 1;
 	        signals[i].lastUpdated = new Date().getTime();
-	        signals[i].closePrice = truefxUpdator.getPrice(signals[i].asset);
+	        signals[i].closePrice = _truefxUpdator.getPrice(signals[i].asset);
 	        signals[i].save();
 	    }
 	});
