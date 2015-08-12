@@ -1,6 +1,6 @@
 var MAX_FOREX_HISTORY		 				= 200;
-var MAX_OPEN_SIGNALS_SECOUNDS				= 3600*24*3;
-var MAX_SIGNALS_HISTORY_SECOUNDS			= 3600
+var MAX_OPEN_SIGNALS_MINS				    = 60*24*3;
+var MAX_SIGNALS_HISTORY_MINS			    = 60*24
 var MAX_PHONE_VALIDATION_HISTORY_MINUTES 	= 30;
 var MAX_TRACKER_MINUTES 					= 60;
 var MAX_LEADS_DAYS		 					= 7;
@@ -8,9 +8,10 @@ var MAX_FOREX_HISTORY_MINUTES				= 200;//OLD
 
 var models = require ("../models");
 var cronJob = require('cron').CronJob;
+var _truefxUpdator;
 
-
-exports.start = function() {
+exports.start = function (truefxUpdator) {
+    _truefxUpdator = truefxUpdator;
 	var job = new cronJob({
 		cronTime: '*/10 * * * *',
 		onTick: function() {
@@ -26,17 +27,27 @@ exports.start = function() {
 
 	});
 	job.start();
+
 }
 
 function shrinkSignals() {
 	var now = new Date().getTime();
-	var before = now - (MAX_SIGNALS_HISTORY_SECOUNDS * 1000);
-	var beforeOpen = now - (MAX_OPEN_SIGNALS_SECOUNDS * 1000);
-	models.signals.remove({
-		$or:[
-		     {status:0, lastUpdated:{$lt: beforeOpen}},
-		     {status:1, lastUpdated:{$lt: before}}
-		     ]}, function(err) {
+	var before = now - (MAX_SIGNALS_HISTORY_MINS * 60000);
+	var beforeOpen = now - (MAX_OPEN_SIGNALS_MINS * 60000);
+
+
+    // close expired opened signals
+	models.signals.find({ status: 0, lastUpdated: { $lt: beforeOpen } }).exec(function (err, result) {
+	    for (var i = 0; i < signals.length; i++) {
+	        signals[i].status = 1;
+	        signals[i].lastUpdated = new Date().getTime();
+	        signals[i].closePrice = truefxUpdator.getPrice(signals[i].asset);
+	        signals[i].save();
+	    }
+	});
+	
+    //remove closed signals
+	models.signals.remove({status:1, lastUpdated:{$lt: before}}, function(err) {
 	
 		if (!err) {
 			console.log("Old signals removed");

@@ -75,6 +75,15 @@ exports.isUnchanged = function(assetName) {
     return !isAssetUpdated(assetName);
 };
 
+exports.getPrice = function (assetName) {
+    if (assets[assetName]) return assets[assetName].bid;
+    if (assetName.length == 6) {
+        var newName = assetName.substring(0, 3) + "/" + assetName.substring(3, 6);
+        if (assets[newName]) return assets[newName].bid
+    }
+    return null;
+};
+
 exports.getUnchangedAssets = function() {
     var unchangedAssets = [];
     var now = new Date().getTime();
@@ -142,8 +151,8 @@ function updateSignals(asset, price) {
                              { power: { $gt: 0 } }, //buy
                              {
                                  $or: [
-                                      { $and: [{ takeProfit: { $gt: price } }, { takeProfit: { $ne: 0 } }] },
-                                      { $and: [{ stopLoss: { $lt: price } }, { stopLoss: { $ne: 0 } }] }
+                                      { $and: [{ "truefx.takeProfit": { $gt: price } }, { takeProfit: { $ne: 0 } }] },
+                                      { $and: [{ "truefx.stopLoss": { $lt: price } }, { stopLoss: { $ne: 0 } }] }
                                  ]
                              }
 			          ]
@@ -153,8 +162,8 @@ function updateSignals(asset, price) {
                              { power: { $lt: 0 } }, //sell
                              {
                                  $or: [
-                                      { $and: [ {takeProfit: { $lt: price }},{takeProfit: { $ne: 0 }} ]},
-                                      { $and: [{ stopLoss: { $gt: price } }, { stopLoss: { $ne: 0 } }] }
+                                      { $and: [ {"truefx.takeProfit": { $lt: price }},{takeProfit: { $ne: 0 }} ]},
+                                      { $and: [{ "truefx.stopLoss": { $gt: price } }, { stopLoss: { $ne: 0 } }] }
                                  ]
                              }
 			          ]
@@ -167,7 +176,9 @@ function updateSignals(asset, price) {
             $set: {
                 status: 1,
                 lastUpdated: new Date().getTime(),
-                closePrice: price
+                closePrice: price,
+                "truefx.closePrice" : price
+
             }
         }, function (err, r) {
             if (err) {

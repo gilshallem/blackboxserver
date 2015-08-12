@@ -5,11 +5,11 @@ var appSettings = {
 
 var strategies = {
     test: ["test"],
-    strategy1: ["gaps"],
-    strategy2: ["PipzuExtrapolated1.1"],
-    strategy3: ["RangerFX"],
-    strategy4: ["SAR ADX Expert Advisor"],
-    strategy5: ["universalMACrossEAV1.1"]
+    strategy1: ["RangerFX","universalMACrossEAV1.1"],
+    strategy2: ["SAR ADX Expert Advisor","universalMACrossEAV1.1"],
+    strategy3: ["RangerFX", "gaps"],
+    strategy4: ["SAR ADX Expert Advisor", "PipzuExtrapolated1.1"],
+    strategy5: ["SAR ADX Expert Advisor","universalMACrossEAV1.1","gaps"]
 
 }
 
@@ -97,8 +97,8 @@ process.on('uncaughtException', function (err) {
 }); 
 
 //update data
-var cronUpdateData_OLD =  require('./cron_jobs/update_data_old');
-cronUpdateData_OLD.start();
+var truefxUpdator =  require('./cron_jobs/truefx_updator');
+truefxUpdator.start();
 
 //update data
 //var cronUpdateData =  require('./cron_jobs/update_data');
@@ -110,7 +110,7 @@ cronUpdateData_OLD.start();
 
 //shrink data
 var cronShrinkData =  require('./cron_jobs/shrink_data');
-cronShrinkData.start();
+cronShrinkData.start(truefxUpdator);
 
 
 //send pending leads
@@ -727,12 +727,12 @@ app.post('/getHistory', function(req, res) {
 });
 
 app.post('/getTradeable', function(req, res) {
-	res.send(cronUpdateData_OLD.getUnchangedAssets());
+	res.send(truefxUpdator.getUnchangedAssets());
 });
 
 app.post('/getStatistics', function(req, res) {
 	res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
-	var totalTradable = cronUpdateData_OLD.getAssetCount() - cronUpdateData_OLD.getUnchangedAssets().length;
+	var totalTradable = truefxUpdator.getAssetCount() - truefxUpdator.getUnchangedAssets().length;
 	if (totalTradable>0) {
 		var stats=statistics.getStatistics();
 		stats.push(""+totalTradable);
@@ -772,24 +772,43 @@ app.post('/getSignals', function(req, res) {
 	else {
 	    query['status'] = 0;
 	}
-	models.signals.find(query).exec(function(err, result) { 
-		if (!err) {
-			res.send(JSON.stringify(result));
-		} else {
-			console.log(err);
-			res.send(err);
-		};
+	models.signals.find(query).exec(function (dbErr, result) {
+	    if (!dbErr) {
+	        var output = [];
+	        for (var i = 0; i < result.length; i++) {
+	            output.push({
+	                price: result[i].truefx.price,
+	                power: result[i].power,
+	                stopLoss: result[i].truefx.stopLoss,
+	                takeProfit: result[i].truefx.takeProfit,
+	                closePrice: result[i].truefx.closePrice,
+	                power: result[i].power,
+	                firedTime: result[i].firedTime,
+	                lastUpdated: result[i].lastUpdated,
+	                ticket: result[i].ticket,
+	                volume: result[i].volume,
+	                status: result[i].status
+	            });
+	        }
+
+	        res.send(JSON.stringify(output));
+	    } else {
+	        console.log(dbErr);
+	        res.send(dbErr);
+	    };
 	});
 });
 
-app.post('/addSignal', function(req, res) {
+app.post('/addSignal', function (req, res) {
+    var price = truefxUpdator.getPrice(req.body.asset);
+    var diff = price - parseFloat(req.body.price);
 		var now = new Date().getTime();
 		var values = {
                 ea: req.body.ea,
 				asset:  req.body.asset,
 				symbol:  req.body.symbol,
 				cmd: parseInt( req.body.cmd),
-				power: parseInt(  req.body.power),
+				power: getRandomIntInclusive(3,9), //parseInt(  req.body.power),
 				price:  parseFloat(req.body.price),
 				stopLoss:  parseFloat(req.body.sl),
 				takeProfit:  parseFloat(req.body.tp),
@@ -800,7 +819,11 @@ app.post('/addSignal', function(req, res) {
 				volume: parseFloat(req.body.volume),
 				magic: parseInt(req.body.magic),
 				comment: req.body.comment,
-            
+				truefx: {
+				    price: price,
+				    stopLoss: Math.max(0, parseFloat(req.body.sl) + diff),
+				    takeProfit: Math.max(0, parseFloat(req.body.tp) + diff)
+				}
 				
 				
 			};
@@ -818,7 +841,9 @@ app.post('/addSignal', function(req, res) {
 	
 });
 
-
+function getRandomIntInclusive(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 app.post('/modifySignal', function(req, res) {
 	
@@ -841,8 +866,18 @@ app.post('/modifySignal', function(req, res) {
 				res.send("Error: invalid signal");
 			}
 			else {
+			    
+			    var diff = truefxUpdator.getPrice(signal.asset) - parseFloat(req.body.price);
+			    console.log("tp=" + truefxUpdator.getPrice(signal.asset));
+			    console.log("p=" + parseFloat(req.body.price));
+			    console.log("diff=" + diff);
+			    signal.truefx.stopLoss = Math.max(0, parseFloat(req.body.sl) + diff);
+			    signal.truefx.takeProfit = Math.max(0, parseFloat(req.body.tp) + diff);
+			    signal.markModified('truefx');
+
 				signal.stopLoss = parseFloat(req.body.sl);
 				signal.takeProfit = parseFloat(req.body.tp);
+				
 				signal.lastUpdated = new Date().getTime();
 				signal.save(function(dbErr) {
 					if (dbErr) {
@@ -885,6 +920,7 @@ app.post('/closeSignal', function(req, res) {
 					signal.status = 1;
 					signal.lastUpdated = new Date().getTime();
 					signal.closePrice = parseFloat(req.body.closePrice);
+					signal.truefx.closePrice = truefxUpdator.getPrice(signal.asset);
 					signal.save(function(dbErr) {
 						if (dbErr) {
 							console.log("dbErr: " + dbErr)
