@@ -104,7 +104,8 @@ var signalsSchema = new mongoose.Schema({
     closePrice:Number,
     ticket: Number,
     comment: String,
-    truefx: mongoose.Schema.Types.Mixed
+    truefx: mongoose.Schema.Types.Mixed,
+    closeTime: Number
 
 
 },{ autoIndex: false });
