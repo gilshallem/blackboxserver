@@ -799,7 +799,7 @@ app.post('/getSignals', function(req, res) {
 	});
 });
 
-app.post('/addSignal', function (req, res) {
+app.post('/mt/addSignal', function (req, res) {
     var price = truefxUpdator.getPrice(req.body.asset);
     var diff = price - parseFloat(req.body.price);
 		var now = new Date().getTime();
@@ -845,7 +845,7 @@ function getRandomIntInclusive(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-app.post('/modifySignal', function(req, res) {
+app.post('/mt/modifySignal', function(req, res) {
 	
     models.signals.findOne({
         ticket: parseInt(req.body.ticket), symbol: req.body.symbol, ea: req.body.ea, status: 0,
@@ -898,7 +898,7 @@ app.post('/modifySignal', function(req, res) {
 
 });
 
-app.post('/closeSignal', function(req, res) {
+app.post('/mt/closeSignal', function(req, res) {
 	console.log(req.body.ticket + "," + req.body.symbol + "," + req.body.ea);
 	models.signals.findOne({ticket:parseInt(req.body.ticket), symbol:req.body.symbol,ea:  req.body.ea }, function (err, signal){
 		if (err) {
@@ -920,6 +920,7 @@ app.post('/closeSignal', function(req, res) {
 					signal.status = 1;
 					signal.lastUpdated = new Date().getTime();
 					signal.closePrice = parseFloat(req.body.closePrice);
+					signal.closeTime = new Date().getTime();
 					signal.truefx.closePrice = truefxUpdator.getPrice(signal.asset);
 					signal.save(function(dbErr) {
 						if (dbErr) {
@@ -942,16 +943,18 @@ app.post('/closeSignal', function(req, res) {
 
 
 });
-app.post("/getOpenSignals", function(req, res) {
+app.post("/mt/getSignals", function(req, res) {
 	res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
 	res.header('Expires', '-1');
 	res.header('Pragma', 'no-cache');
-	var query = models.signals.find({symbol:req.body.symbol, ea: req.body.ea, status:0 });
+	var before = new Date().getTime() - 12*360000;
+	var query = models.signals.find({symbol:req.body.symbol, ea: req.body.ea,$or:[ {status:0},{status:1,closeTime:{$gt:before}}] });
 	query.exec(function(err, result) { 
 		if (!err) {
 			var output = [];
 			for (var i=0;i<result.length;i++) {
-				output.push({
+				var signal = 
+				{
 						cmd: result[i].cmd,
 						volume: result[i].volume,
 						price: result[i].price,
@@ -960,8 +963,15 @@ app.post("/getOpenSignals", function(req, res) {
 						slippage: result[i].slippage,
 						ticket: result[i].ticket,
 						magic: result[i].magic,
-						comment: result[i].comment
-				});
+						comment: result[i].comment,
+						openTime: Math.round(result[i].firedTime/1000)
+						
+				};
+				
+				if (result[i].closePrice) signal.closePrice =result[i].closePrice;
+				if (result[i].closeTime) signal.closeTime =Math.round(result[i].closeTime/1000);
+				
+				output.push(signal);
 			}
 			
 			res.send(JSON.stringify(output));
