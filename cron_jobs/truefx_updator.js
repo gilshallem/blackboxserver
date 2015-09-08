@@ -177,6 +177,7 @@ function updateSignals(asset, price) {
                 status: 1,
                 lastUpdated: new Date().getTime(),
                 closePrice: price,
+                closeTime: new Date().getTime(),
                 "truefx.closePrice" : price
 
             }
