@@ -156,6 +156,14 @@ app.post('/getSettings', function(req, res) {
 	
 });
 
+app.post('/test', function(req, res) {
+	console.log(req.headers);
+	console.log(req.body);
+	console.log(req.query);
+	
+	res.send(200,"yeey!");
+	
+});
 
 app.post('/openApp', function(req, res) {
 	if (req.body.cat && req.body.ref) {
@@ -763,11 +771,11 @@ app.post('/getSignals', function(req, res) {
 	};
 	var or = [];
 	for (var i = 0; i < strategies[req.body.strategy].length; i++) {
-	    or.push({ ea: strategies[req.body.strategy][i] });
+	    or.push({ magic: strategies[req.body.strategy][i] });
 	}
 	query["$or"] = or;
 	if (req.body.ticket != null) {
-	    query['ticket'] = parseInt(req.body.ticket);
+	    query['_id'] = parseInt(req.body.ticket);
 	}
 	else {
 	    query['status'] = 0;
@@ -778,15 +786,13 @@ app.post('/getSignals', function(req, res) {
 	        for (var i = 0; i < result.length; i++) {
 	            output.push({
 	                price: result[i].truefx.price,
-	                power: result[i].power,
 	                stopLoss: result[i].truefx.stopLoss,
 	                takeProfit: result[i].truefx.takeProfit,
 	                closePrice: result[i].truefx.closePrice,
 	                power: result[i].power,
-	                firedTime: result[i].firedTime,
+	                openTime: result[i].openTime,
 	                lastUpdated: result[i].lastUpdated,
-	                ticket: result[i].ticket,
-	                volume: result[i].volume,
+	                ticket: result[i]._id,
 	                status: result[i].status
 	            });
 	        }
@@ -799,26 +805,109 @@ app.post('/getSignals', function(req, res) {
 	});
 });
 
+
+app.post('/mt/updateSignals', function (req, res) {
+	res.send(200); // it needs to respond fast so the mt4 will not be stuck
+	console.log(req.body);
+	var now = new Date().getTime();
+	for (var ticket in req.body.orders) {
+	    /*
+		 * 0 OrderMagicNumber 
+		   1 OrderSymbol
+		   2 OrderType
+		   3 OrderOpenPrice
+		   4 OrderStopLoss
+		   5 OrderTakeProfit
+		   6 OrderIsOpen (1 - open, 0 - close)
+           7 Current Bid
+		 */
+	    var params = req.body.orders[ticket].split(",");
+	    var price = truefxUpdator.getPrice(params[1]);
+	    var diff = price - parseFloat(params[7]);
+		
+		if (params[6]=="1") {
+		    // its an open order
+    
+		    models.signals.findOneAndUpdate(
+					  {
+						  server: req.body.server,
+						  asset: params[1],
+						  magic: params[0],
+						  ticket: ticket
+					  },
+					  {
+					      $set: {
+					          stopLoss: parseFloat(params[4]) == 0 ? 0 : Math.max(0, parseFloat(params[4]) + diff),
+					          takeProfit: parseFloat(params[5]) == 0 ? 0 : Math.max(0, parseFloat(params[5]) + diff),
+					          lastUpdated: now
+
+					      },
+					    $setOnInsert: {
+					        openPrice: price,
+                            openTime:now,
+					        isBuy: parseInt( params[2]) % 2 ==0,
+					        ticket: ticket,
+					        server: req.body.server,
+					        asset: params[1],
+					        magic: params[0],
+
+                            isOpen: true
+
+					    }
+					  },
+					  {upsert: true,     
+					   'new': true,   
+					  }, function (err, signal) {
+					    console.log(err);
+					    console.log(signal);
+					  });
+		}
+		else {
+			console.log("close " + params[6]);
+		    //its a closed order
+			var trueFxPrice = truefxUpdator.getPrice(params[1]);
+			models.signals.update(
+					  {
+						  server: req.body.server,
+						  asset: params[1],
+						  magic: params[0],
+						  ticket: ticket
+					  },
+					  {
+					      $set: {
+					    	  isOpen: false,
+					          lastUpdated: now,
+					          closeTime:now,
+					          closePrice: trueFxPrice,
+					          closeByServer: false
+
+					      },
+					    
+					  },
+					  {}, function (err, signal) {
+					    console.log(err);
+					    console.log(signal);
+					  });
+		}
+	}
+
+});
+
 app.post('/mt/addSignal', function (req, res) {
     var price = truefxUpdator.getPrice(req.body.asset);
     var diff = price - parseFloat(req.body.price);
 		var now = new Date().getTime();
 		var values = {
-                ea: req.body.ea,
 				asset:  req.body.asset,
-				symbol:  req.body.symbol,
 				cmd: parseInt( req.body.cmd),
 				power: getRandomIntInclusive(3,9) * (parseInt(  req.body.power)>=0 ? 1 : -1),
 				price:  parseFloat(req.body.price),
 				stopLoss:  parseFloat(req.body.sl),
 				takeProfit:  parseFloat(req.body.tp),
-				slippage: parseInt(req.body.slippage),
-				firedTime: now,
+				openTime: now,
 				lastUpdated: now,
 				status: 0,
-				volume: parseFloat(req.body.volume),
 				magic: parseInt(req.body.magic),
-				comment: req.body.comment,
 				truefx: {
 				    price: price,
 				    stopLoss: parseFloat(req.body.sl)==0 ? 0 : Math.max(0, parseFloat(req.body.sl) + diff),
@@ -985,7 +1074,7 @@ app.post("/mt/getSignals", function(req, res) {
 
 
 
-var port = Number(process.env.PORT || 81);
+var port = Number(process.env.PORT || 80);
 
 app.listen(port, function() {
 	console.log("Listening on " + port);

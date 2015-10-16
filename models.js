@@ -86,48 +86,42 @@ var counter = mongoose.model('counter', new mongoose.Schema({
     seq: { type: Number, default: 0 }
 }));
 
+
 var signalsSchema = new mongoose.Schema({
-    ea: String,
-	asset: String,
-	symbol: String,
-	cmd: Number,
-	slippage: Number,
-	power: Number,
-	price: Number,
-	stopLoss: Number,
-	takeProfit: Number,
-	firedTime: Number,
-	lastUpdated: Number,
-	status: Number,
-	volume: Number,
-	magic: Number,
-    closePrice:Number,
+    asset: String,
+    power: Number,
+    openPrice: Number,
+    openTime: Number,
+    stopLoss: Number,
+    takeProfit: Number,
+    lastUpdated: Number,
+    magic: Number,
+    closePrice: Number,
+    closeTime: Number,
+    isOpen: Boolean,
+    isBuy: Boolean,
     ticket: Number,
-    comment: String,
-    truefx: mongoose.Schema.Types.Mixed,
-    closeTime: Number
+    closeByServer: Boolean
 
+}, { autoIndex: false });
 
-},{ autoIndex: false });
 
 signalsSchema.pre('save', function (next) {
 
     var doc = this;
     if (doc.isNew) {
-	    counter.findByIdAndUpdate({_id: 'signals'}, {$inc: { seq: 1} },{upsert: true, new: true}, function(error, counter)   {
-	        if(error)
-	            return next(error);
-	        doc.ticket = counter.seq;
-	        next();
-	    });
-	}
+        counter.findByIdAndUpdate({ _id: 'signals2' }, { $inc: { seq: 1 } }, { upsert: true, new: true }, function (error, counter) {
+            if (error)
+                return next(error);
+            doc.ticket = counter.seq;
+            next();
+        });
+    }
     else {
-		next();
-	}
+        next();
+    }
 });
 
 
 
-exports.signals = mongoose.model('signals',signalsSchema);
-
-
+exports.signals = mongoose.model('signals2', signalsSchema);

@@ -144,26 +144,26 @@ function updateSignals(asset, price) {
     if (price > 0) {
 
         var query = {
-            asset: asset.replace("/", ""), status: 0,
+            asset: asset.replace("/", ""), isOpen: true,
             $or: [
 			      {
 			          $and: [
-                             { power: { $gt: 0 } }, //buy
+                             { isBuy: true }, //buy
                              {
                                  $or: [
-                                      { $and: [{ "truefx.takeProfit": { $gt: price } }, { takeProfit: { $ne: 0 } }] },
-                                      { $and: [{ "truefx.stopLoss": { $lt: price } }, { stopLoss: { $ne: 0 } }] }
+                                      { $and: [{ takeProfit: { $lt: price } }, { takeProfit: { $ne: 0 } }] },
+                                      { $and: [{ stopLoss: { $gt: price } }, { stopLoss: { $ne: 0 } }] }
                                  ]
                              }
 			          ]
 			      },
 			      {
 			          $and: [
-                             { power: { $lt: 0 } }, //sell
+                             { isBuy: false }, //sell
                              {
                                  $or: [
-                                      { $and: [ {"truefx.takeProfit": { $lt: price }},{takeProfit: { $ne: 0 }} ]},
-                                      { $and: [{ "truefx.stopLoss": { $gt: price } }, { stopLoss: { $ne: 0 } }] }
+                                      { $and: [ {"takeProfit": { $gt: price }},{takeProfit: { $ne: 0 }} ]},
+                                      { $and: [{ "stopLoss": { $lt: price } }, { stopLoss: { $ne: 0 } }] }
                                  ]
                              }
 			          ]
@@ -172,22 +172,22 @@ function updateSignals(asset, price) {
         };
         //models.signals.find(query).exec(function(err, result) { 
         //}
-        models.signals.update(query, {
-            $set: {
-                status: 1,
-                lastUpdated: new Date().getTime(),
-                closePrice: price,
-                closeTime: new Date().getTime(),
-                "truefx.closePrice" : price
-
-            }
-        }, function (err, r) {
+        models.signals.find(query).exec(function (err, signals) {
             if (err) {
                 console.log("error closing signals:" + err);
             }
-           
-            
-        })
+            else {
+                for (var signal in signals) {
+                    signal.isOpen= false;
+                    signal.lastUpdated= new Date().getTime();
+                    signal.closePrice= (signal.isBuy ? signal.openPrice< price : signal.openPrice> price) ? signal.takeProfit : signal.stopLoss;
+                    signal.closeTime= new Date().getTime();
+                    signal.closeByServer= true;
+                    signal.save();
+                }
+                
+            }
+        });
     }
    // blackboxcrm.sendSignalStatistics(this);
 } 
