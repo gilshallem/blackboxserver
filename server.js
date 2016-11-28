@@ -601,9 +601,10 @@ app.post('/setAppsFlyer', function(req, res) {
 });
 
 app.post('/signalStatistics', function(req, res) {
-	blackboxcrm.signalStatistics(req.body.strategy,req.body.asset,req.body.signalTime,req.body.direction,req.body.power,req.body.bid,req.body.stopLoss,req.body.takeProfit,req.body.won,req.body.avgJump,req.body.tpPeriod,req.body.slPeriod,req.body.potentialSL,req.body.potentialTP,req.body.min5,req.body.min10,req.body.min15,req.body.max5,req.body.max10,req.body.max15,function(status,err) {
+	res.send("0");
+	/*blackboxcrm.signalStatistics(req.body.strategy,req.body.asset,req.body.signalTime,req.body.direction,req.body.power,req.body.bid,req.body.stopLoss,req.body.takeProfit,req.body.won,req.body.avgJump,req.body.tpPeriod,req.body.slPeriod,req.body.potentialSL,req.body.potentialTP,req.body.min5,req.body.min10,req.body.min15,req.body.max5,req.body.max10,req.body.max15,function(status,err) {
 		res.send(""+status);
-	});
+	});*/
 });
 
 
