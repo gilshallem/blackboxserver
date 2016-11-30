@@ -118,12 +118,15 @@ cronShrinkData.start(truefxUpdator);
 //cronSendLeads.start();
 
 //connect to db
+
+
 var uristring =
 	process.env.MONGOLAB_URI ||
 	process.env.MONGOHQ_URL ||
-	'mongodb://localhost/BlackBoxServer'
+	'mongodb://localhost/BlackBoxServer';
+var con_options = { server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } }, replset: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } } };
 
-	mongoose.connect(uristring, function (err, res) {
+	mongoose.connect(uristring,con_options, function (err, res) {
 		if (err) {
 			console.log ('ERROR connecting to: ' + uristring + '. ' + err);
 		} else {
