@@ -118,12 +118,15 @@ cronShrinkData.start(truefxUpdator);
 //cronSendLeads.start();
 
 //connect to db
+
+
 var uristring =
 	process.env.MONGOLAB_URI ||
 	process.env.MONGOHQ_URL ||
-	'mongodb://localhost/BlackBoxServer'
+	'mongodb://localhost/BlackBoxServer';
+var con_options = { server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } }, replset: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } } };
 
-	mongoose.connect(uristring, function (err, res) {
+	mongoose.connect(uristring,con_options, function (err, res) {
 		if (err) {
 			console.log ('ERROR connecting to: ' + uristring + '. ' + err);
 		} else {
@@ -601,9 +604,10 @@ app.post('/setAppsFlyer', function(req, res) {
 });
 
 app.post('/signalStatistics', function(req, res) {
-	blackboxcrm.signalStatistics(req.body.strategy,req.body.asset,req.body.signalTime,req.body.direction,req.body.power,req.body.bid,req.body.stopLoss,req.body.takeProfit,req.body.won,req.body.avgJump,req.body.tpPeriod,req.body.slPeriod,req.body.potentialSL,req.body.potentialTP,req.body.min5,req.body.min10,req.body.min15,req.body.max5,req.body.max10,req.body.max15,function(status,err) {
+	res.send("0");
+	/*blackboxcrm.signalStatistics(req.body.strategy,req.body.asset,req.body.signalTime,req.body.direction,req.body.power,req.body.bid,req.body.stopLoss,req.body.takeProfit,req.body.won,req.body.avgJump,req.body.tpPeriod,req.body.slPeriod,req.body.potentialSL,req.body.potentialTP,req.body.min5,req.body.min10,req.body.min15,req.body.max5,req.body.max10,req.body.max15,function(status,err) {
 		res.send(""+status);
-	});
+	});*/
 });
 
 
