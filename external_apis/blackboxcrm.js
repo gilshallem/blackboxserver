@@ -7,7 +7,7 @@ exports.notify = function (title,description,data,type,notify,callback) {
 }
 
 exports.addLead = function(ip,fname,lname,email,country,phone,countryCode,language,refCat,ref,callback) {
-	hubspot.contacts.create({
+	hubspot.contacts.createOrUpdate(email.trim(),{
 		"properties": [
 			{
 				"property": "email",
