@@ -33,7 +33,7 @@ exports.addLead = function(ip,fname,lname,email,country,phone,countryCode,langua
 
 	}, function(err, resp, body) {
 		if (err || resp.statusCode!=200) {
-			callback(-1,err,phone);
+			callback(0,err,phone);
 		}
 		else {
 			callback(0,null,phone);
@@ -70,7 +70,7 @@ exports.addUser = function(ip,fname,lname,email,country,language,refCat,ref,call
 
 	}, function(err, resp, body) {
 		if (err || resp.statusCode!=200) {
-			callback(-1,err,phone);
+			callback(0,err,phone);
 		}
 		else {
 			callback(0,null,phone);
