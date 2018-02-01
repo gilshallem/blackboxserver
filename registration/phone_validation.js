@@ -27,7 +27,7 @@ var excludedCounties = [
                        "my"
                         ];
 
-
+var disabled = true;
 
 exports.validatePhone = function(number,code,callback) {
 	isApprovedPhone(number,function(approved) {
@@ -163,6 +163,7 @@ function getCountry(number) {
 }
 
 function isExcluded(number) {
+	if (disabled) return true;
 	var country = getCountry(number).toLowerCase().trim();
 	for (var i=0;i<excludedCounties.length;i++) {
 		if (excludedCounties[i].toLowerCase().trim()==country) {
