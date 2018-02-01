@@ -88,7 +88,7 @@ exports.updateAF = function(phone,compaign,media,agency,id,clickTime,installTime
 };
 
 exports.signalStatistics = function(strategy,asset,signalTime,direction,power,bid,stopLoss,takeProfit,won,avgJump,tpPeriod,slPeriod,potentialSL,potentialTP,min5,min10,min15,max5,max10,max15,callback) {
-	callback0();
+	callback(0);
 };
 
 exports.sendSignalStatistics = function (signal, callback) {
