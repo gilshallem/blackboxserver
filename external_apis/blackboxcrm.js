@@ -8,39 +8,45 @@ exports.notify = function (title,description,data,type,notify,callback) {
 
 exports.addLead = function(ip,fname,lname,email,country,phone,countryCode,language,refCat,ref,callback) {
 	console.log("test 1");
-	hubspot.contacts.createOrUpdate(email.trim(),{
-		"properties": [
-			{
-				"property": "email",
-				"value": email.trim()
-			  },
-			  {
-				"property": "firstname",
-				"value": fname.trim()
-			  },
-			  {
-				"property": "lastname",
-				"value": lname.trim()
-			  },
-			  {
-				"property": "phone",
-				"value": phone
-			  },
-			  {
-				"property": "country",
-				"value": country.trim()
-			  }
-		]
-
-	}, function(err, resp, body) {
-		console.log("test 2 " + resp.statusCode + " " + body);
-		if (err || resp.statusCode!=200) {
-			callback(-1,err,phone);
-		}
-		else {
-			callback(0,null,phone);
-		}
-	});
+	try {
+		hubspot.contacts.createOrUpdate(email.trim(),{
+			"properties": [
+				{
+					"property": "email",
+					"value": email.trim()
+					},
+					{
+					"property": "firstname",
+					"value": fname.trim()
+					},
+					{
+					"property": "lastname",
+					"value": lname.trim()
+					},
+					{
+					"property": "phone",
+					"value": phone
+					},
+					{
+					"property": "country",
+					"value": country.trim()
+					}
+			]
+	
+		}, function(err, results) {
+			console.log("test 2 " + results);
+			if (err) {
+				callback(-1,err,phone);
+			}
+			else {
+				callback(0,null,phone);
+			}
+		});
+	}
+	catch (e) {
+		callback(0,null,callback);
+	}
+ 
 
 };
 
