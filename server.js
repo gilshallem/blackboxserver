@@ -614,9 +614,11 @@ app.post('/signalStatistics', function(req, res) {
 app.post('/register', function(req, res) {
 	console.log("test reg");
 	var registerFunc = function(ref,cat) {
+		console.log("test reg2");
 		var ip = getClientAddress(req);
 		var country = getCountry(req.body.number,ip,req.body.country);
 		registration.register(ip,req.body.fname,req.body.lname,req.body.email,country,req.body.language,cat,ref,req.body.number,req.body.country_code,req.body.code,function(status,err) {
+			console.log("test reg3");
 			res.send(""+status);
 			if (err) {
 				console.log("Error /register returned " +status +":" + err);
