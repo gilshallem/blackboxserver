@@ -5,18 +5,18 @@
   "version": "0.0.1",
   "dependencies": {
     "country-data": "0.0.13",
-    "cron": "~1.0.3",
+    "cron": "1.0.3",
     "crypto": "0.0.3",
     "e164": "0.0.4",
     "express": "~3.4.8",
-    "hubspot": "^1.2.1",
-    "ip2cc": "~0.9.3",
-    "logfmt": "~0.20.0",
+    "hubspot": "1.2.1",
+    "ip2cc": "0.9.3",
+    "logfmt": "0.20.0",
     "mongodb": "1.4.40",
     "mongoose": "4.1.12",
-    "needle": "~0.6.3",
+    "needle": "0.6.3",
     "pixel-tracker": "0.0.5",
-    "universal-analytics": "~0.3.4"
+    "universal-analytics": "0.3.4"
   },
   "repository": {
     "type": "git",
