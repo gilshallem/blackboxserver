@@ -124,14 +124,7 @@ var uristring =
 	process.env.MONGOLAB_URI ||
 	process.env.MONGOHQ_URL ||
 	'mongodb://localhost/BlackBoxServer';
-var con_options = { server: 
-	 
-	{  // sets how many times to try reconnecting
-		reconnectTries: Number.MAX_VALUE,
-		// sets the delay between every retry (milliseconds)
-		reconnectInterval: 1000 ,
-		socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } }, 
-	replset: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } } };
+var con_options = { server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } }, replset: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } } };
 
 	mongoose.connect(uristring,con_options, function (err, res) {
 		if (err) {
