@@ -9,8 +9,10 @@ exports.register = function(ip,fname,lname,email,country,language,refCat,ref,num
 	phoneValidation.validatePhone(number,code,function(status,err) {
 		// if phone validated
 		if (status==0 || status == 1) {
+			console.log("test g2");
 			isAllreadyRegistered(number,fname,lname,function(isPhoneRegistered) {
 				if (isPhoneRegistered) {
+					console.log("test g3");
 					callback(0);
 				}
 				else {
@@ -31,9 +33,9 @@ exports.register = function(ip,fname,lname,email,country,language,refCat,ref,num
 						
 
 					});*/
-					console.log("test g2");
+					console.log("test g4");
 					blackboxcrm.addLead(ip,fname,lname,email,country,number,countryCode,language,refCat,ref,function(status,err) {
-						console.log("test g3");
+						console.log("test g5");
 						if (status==0) {
 							//updateLead(number,"sentToCRM2",true);
 							
