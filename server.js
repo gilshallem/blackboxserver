@@ -637,6 +637,9 @@ app.post('/register', function(req, res) {
 		});
 
 	};
+	registerFunc();
+	//TODO: fix tracker
+	/*
 	if (req.body.cat && req.body.ref) { 
 		registerFunc(req.body.ref,req.body.cat);
 	}
@@ -645,7 +648,7 @@ app.post('/register', function(req, res) {
 			console.log("Error looking for tracker user");
 			res.send("88");
 		});
-	}
+	}*/
 
 
 
