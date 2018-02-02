@@ -7,6 +7,8 @@ exports.notify = function (title,description,data,type,notify,callback) {
 }
 
 exports.addLead = function(ip,fname,lname,email,country,phone,countryCode,language,refCat,ref,callback) {
+	callback(0,null,callback); 
+	return;
 	console.log("test 1");
 	try {
 		hubspot.contacts.createOrUpdate(email.trim(),{
@@ -52,6 +54,8 @@ exports.addLead = function(ip,fname,lname,email,country,phone,countryCode,langua
 
 
 exports.addUser = function(ip,fname,lname,email,country,language,refCat,ref,callback) {
+	callback(0,null,callback); 
+	return;
 	try {
 			hubspot.contacts.createOrUpdate(email.trim(),{
 		"properties": [
