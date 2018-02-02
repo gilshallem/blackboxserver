@@ -22,7 +22,6 @@ exports.notify = function (title,description,data,type,notify,callback) {
 }
 
 exports.addLead = function(ip,fname,lname,email,country,phone,countryCode,language,refCat,ref,callback) {
-	System.out.println("gil1");
 	needle.post(ACTION_URL, {
 		action:"upsert",
 		model:"leads",
@@ -38,7 +37,6 @@ exports.addLead = function(ip,fname,lname,email,country,phone,countryCode,langua
 		"field:options:refferal" : ref
 	}, function(err, resp, body) {
 		if (err || resp.statusCode!=200) {
-			System.out.println("gil2 " + err);
 			callback(-1,err,phone);
 		}
 		else {
@@ -49,7 +47,6 @@ exports.addLead = function(ip,fname,lname,email,country,phone,countryCode,langua
 
 
 exports.addUser = function(ip,fname,lname,email,country,language,refCat,ref,callback) {
-	System.out.println("gil3");
 	needle.post(ACTION_URL, {
 		action:"upsert",
 		model:"leads",
@@ -63,7 +60,6 @@ exports.addUser = function(ip,fname,lname,email,country,language,refCat,ref,call
 		"field:options:refferal" : ref
 	}, function(err, resp, body) {
 		if (err || resp.statusCode!=200) {
-			System.out.println("gil4 " + err);
 			callback(-1,err,phone);
 		}
 		else {
