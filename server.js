@@ -612,6 +612,7 @@ app.post('/signalStatistics', function(req, res) {
 
 
 app.post('/register', function(req, res) {
+	console.log("test reg");
 	var registerFunc = function(ref,cat) {
 		var ip = getClientAddress(req);
 		var country = getCountry(req.body.number,ip,req.body.country);
