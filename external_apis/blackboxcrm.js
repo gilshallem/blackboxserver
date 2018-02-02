@@ -52,8 +52,8 @@ exports.addLead = function(ip,fname,lname,email,country,phone,countryCode,langua
 
 
 exports.addUser = function(ip,fname,lname,email,country,language,refCat,ref,callback) {
-	console.log("test 3");
-	hubspot.contacts.createOrUpdate(email.trim(),{
+	try {
+			hubspot.contacts.createOrUpdate(email.trim(),{
 		"properties": [
 			{
 				"property": "email",
@@ -77,15 +77,18 @@ exports.addUser = function(ip,fname,lname,email,country,language,refCat,ref,call
 			  }
 		]
 
-	}, function(err, resp, body) {
-		console.log("test 4 " + resp.statusCode + " " + body);
-		if (err || resp.statusCode!=200) {
+	}, function(err, results) {
+		if (err) {
 			callback(-1,err,phone);
 		}
 		else {
 			callback(0,null,phone);
 		}
 	});
+}
+	catch (e) {
+		callback(0,null,callback);
+	}
 };
 
 
