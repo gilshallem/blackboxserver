@@ -5,6 +5,7 @@ var phoneValidation = require('../registration/phone_validation');
 var models = require ("../models");
 
 exports.register = function(ip,fname,lname,email,country,language,refCat,ref,number,countryCode,code,callback) {
+	console.log("test g1");
 	phoneValidation.validatePhone(number,code,function(status,err) {
 		// if phone validated
 		if (status==0 || status == 1) {
@@ -30,9 +31,12 @@ exports.register = function(ip,fname,lname,email,country,language,refCat,ref,num
 						
 
 					});*/
+					console.log("test g2");
 					blackboxcrm.addLead(ip,fname,lname,email,country,number,countryCode,language,refCat,ref,function(status,err) {
+						console.log("test g3");
 						if (status==0) {
 							//updateLead(number,"sentToCRM2",true);
+							
 						}
 						callback(status,err);
 					});
